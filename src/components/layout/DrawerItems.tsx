@@ -112,13 +112,13 @@ const NavItem: React.FC<NavItemProps> = ({ route }) => {
         sx={{
           borderRadius: 2,
           mx: 0.5,
-          backgroundColor: isActive ? 'primary.main' : 'transparent',
+          bgcolor: isActive ? 'primary.darker' : 'transparent',
           color: isActive ? 'common.white' : 'text.secondary',
           '& .MuiListItemText-primary': {
             fontWeight: isActive ? 600 : 400,
           },
           '&:hover': {
-            backgroundColor: isActive ? 'primary.dark' : 'action.hover',
+            backgroundColor: isActive ? 'primary.darker' : 'action.hover',
           },
         }}
       >
@@ -165,7 +165,7 @@ export const DrawerItems: React.FC<DrawerItemsProps> = () => {
         >
           <SchoolIcon sx={{ fontSize: 20, color: 'white' }} />
         </Box>
-        <Typography variant="h6" fontWeight={700} color="text.primary">
+        <Typography variant="h6" fontWeight={700} color="common.white">
           EduPlatform
         </Typography>
       </Box>

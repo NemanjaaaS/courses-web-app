@@ -18,7 +18,7 @@ export const Sidebar = ({ variant, open, onClose }: SidebarProps) => {
         sx={{
           '& .MuiDrawer-paper': {
             width: 240,
-            bgcolor: 'purple',
+            bgcolor: 'sidebar.primary',
             borderRight: '1px solid',
             borderColor: 'divider',
             pt: 2,
