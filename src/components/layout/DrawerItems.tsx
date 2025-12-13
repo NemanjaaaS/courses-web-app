@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, List, ListItem, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Typography } from '@mui/material';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -71,15 +71,15 @@ const useSiteMap = ({ isAdmin }: { isAdmin: boolean }) => {
       },
       {
         id: 'sidebar-nav-courses',
-        title: 'Users',
+        title: 'Courses',
         path: '/app/user/courses',
-        icon: UsersIcon,
+        icon: BookIcon,
       },
       {
         id: 'sidebar-nav-my-tests',
         title: 'My Tests',
         path: '/app/user/my-tests',
-        icon: BookIcon,
+        icon: TestIcon,
       },
       {
         id: 'sidebar-nav-certificates',
@@ -122,6 +122,7 @@ const NavItem: React.FC<NavItemProps> = ({ route }) => {
           },
         }}
       >
+        <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>{<route.icon />}</ListItemIcon>
         <ListItemText primary={route.title} />
       </ListItemButton>
     </ListItem>
