@@ -1,46 +1,127 @@
 import React from 'react';
-import { Box, Button, List, ListItem, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
 
 import { useLocation, useNavigate } from 'react-router-dom';
-
+import {
+  Dashboard as DashboardIcon,
+  School as SchoolIcon,
+  MenuBook as BookIcon,
+  Assignment as TestIcon,
+  EmojiEvents as AwardIcon,
+  People as UsersIcon,
+  BarChart as ChartIcon,
+  Receipt as TransactionIcon,
+} from '@mui/icons-material';
 // -------------------------------------------------------------------
 // 1. Your sitemap hook
 // -------------------------------------------------------------------
-const useSitemap = () => {
-  return [
-    {
-      id: 'sidebar-nav-dashboard',
-      title: 'Dashboard',
-      path: '/app/dashboard',
-    },
-    {
-      id: 'sidebar-nav-courses',
-      title: 'Courses',
-      path: '/app/courses',
-    },
-  ];
+const useSiteMap = ({ isAdmin }: { isAdmin: boolean }) => {
+  if (isAdmin) {
+    return [
+      {
+        id: 'sidebar-nav-dashboard',
+        title: 'Dashboard',
+        path: '/app/admin/dashboard',
+        icon: DashboardIcon,
+      },
+      {
+        id: 'sidebar-nav-users',
+        title: 'Users',
+        path: '/app/admin/users',
+        icon: UsersIcon,
+      },
+      {
+        id: 'sidebar-nav-courses',
+        title: 'Courses',
+        path: '/app/admin/courses',
+        icon: BookIcon,
+      },
+      {
+        id: 'sidebar-nav-tests',
+        title: 'Tests',
+        path: '/app/admin/tests',
+        icon: TestIcon,
+      },
+      {
+        id: 'sidebar-nav-results',
+        title: 'Results',
+        path: '/app/admin/results',
+        icon: ChartIcon,
+      },
+      {
+        id: 'sidebar-nav-certificates',
+        title: 'Certificates',
+        path: '/app/admin/certificates',
+        icon: AwardIcon,
+      },
+      {
+        id: 'sidebar-nav-transactions',
+        title: 'Transactions',
+        path: '/app/admin/transactions',
+        icon: TransactionIcon,
+      },
+    ];
+  } else {
+    return [
+      {
+        id: 'sidebar-nav-dashboard',
+        title: 'Dashboard',
+        path: '/app/user/dashboard',
+        icon: DashboardIcon,
+      },
+      {
+        id: 'sidebar-nav-courses',
+        title: 'Users',
+        path: '/app/user/courses',
+        icon: UsersIcon,
+      },
+      {
+        id: 'sidebar-nav-my-tests',
+        title: 'My Tests',
+        path: '/app/user/my-tests',
+        icon: BookIcon,
+      },
+      {
+        id: 'sidebar-nav-certificates',
+        title: 'Certificates',
+        path: '/app/user/certificates',
+        icon: AwardIcon,
+      },
+    ];
+  }
 };
 
 // -------------------------------------------------------------------
 // 2. Single navigation item (handles active state + navigation)
 // -------------------------------------------------------------------
 type NavItemProps = {
-  route: ReturnType<typeof useSitemap>[number];
+  route: ReturnType<typeof useSiteMap>[number];
   onClose?: () => void; // optional – close drawer on mobile
 };
 
 const NavItem: React.FC<NavItemProps> = ({ route }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const selected = location.pathname === route.path;
 
-  const handleClick = () => {
-    navigate(route.path);
-  };
-
+  const isActive = location.pathname === route.path || location.pathname.includes(`${route.path}/`);
   return (
     <ListItem disablePadding>
-      <ListItemButton selected={selected} onClick={handleClick}>
+      <ListItemButton
+        selected={isActive}
+        onClick={() => navigate(route.path)}
+        sx={{
+          borderRadius: 2,
+          mx: 0.5,
+          backgroundColor: isActive ? 'primary.main' : 'transparent',
+          color: isActive ? 'common.white' : 'text.secondary',
+          '& .MuiListItemText-primary': {
+            fontWeight: isActive ? 600 : 400,
+          },
+          '&:hover': {
+            backgroundColor: isActive ? 'primary.dark' : 'action.hover',
+          },
+        }}
+      >
         <ListItemText primary={route.title} />
       </ListItemButton>
     </ListItem>
@@ -56,25 +137,38 @@ type DrawerItemsProps = {
 };
 
 export const DrawerItems: React.FC<DrawerItemsProps> = () => {
-  const routes = useSitemap();
-  const navigate = useNavigate();
+  const routes = useSiteMap({ isAdmin: true });
   return (
-    <Stack>
-      <Stack sx={sidebarStyles.topSection}>
-        <Button onClick={() => navigate('/')}>
-          <Typography variant="h5" color="white" fontWeight={600} letterSpacing={1}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                margin: 'auto',
-              }}
-            >
-              <Typography>Courses Logo</Typography>
-            </Box>
-          </Typography>
-        </Button>
-      </Stack>
+    <Stack sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* Logo */}
+      <Box
+        sx={{
+          height: 48,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          px: 3,
+          borderBottom: 1,
+          borderColor: 'divider',
+        }}
+      >
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #4338ca 0%, #7c3aed 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <SchoolIcon sx={{ fontSize: 20, color: 'white' }} />
+        </Box>
+        <Typography variant="h6" fontWeight={700} color="text.primary">
+          EduPlatform
+        </Typography>
+      </Box>
       <List component="nav" sx={sidebarStyles.navigationList}>
         {routes.map((route) => (
           <NavItem key={route.id} route={route} />

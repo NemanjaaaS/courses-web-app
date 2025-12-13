@@ -1,12 +1,21 @@
-import { Stack, Box } from '@mui/material';
+import { Stack, Box, useTheme, useMediaQuery } from '@mui/material';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
+import { useState } from 'react';
 
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 export const Layout = ({ children }: LayoutProps) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen((prev) => !prev);
+  };
+
   return (
     <Stack
       width={'100vw'}
@@ -23,23 +32,17 @@ export const Layout = ({ children }: LayoutProps) => {
       }}
     >
       {/* Desktop sidebar */}
-      <Sidebar variant="permanent" open />
+      {!isMobile && <Sidebar variant="permanent" open />}
+
+      {/* Mobile sidebar */}
+      {isMobile && <Sidebar variant="temporary" open={mobileOpen} onClose={handleDrawerToggle} />}
 
       {/* Main content area */}
       <Stack flex={1} display="flex" overflow="hidden">
-        <Topbar />
+        <Topbar onDrawerToggle={handleDrawerToggle} />
 
-        <Box
-          sx={{
-            flex: 1,
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            width: '100%',
-            p: { xs: 2, md: 3 },
-          }}
-        >
-          {children}
-        </Box>
+        {/* Page content */}
+        <Box component="main">{children}</Box>
       </Stack>
     </Stack>
   );
