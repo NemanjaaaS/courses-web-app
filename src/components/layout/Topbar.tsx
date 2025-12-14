@@ -1,5 +1,17 @@
-import { IconButton, AppBar, Avatar, Box, Divider, ListItemIcon, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import {
+  IconButton,
+  AppBar,
+  Avatar,
+  Box,
+  Divider,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
+  Stack,
+} from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Menu as MenuIcon,
   KeyboardArrowDown as ArrowDownIcon,
@@ -32,6 +44,99 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
     navigate('/login');
   };
 
+  const location = useLocation();
+  const pathArray = location.pathname.split('/');
+  const pathName = pathArray.at(pathArray.length - 1);
+
+  const mapTitleAndHelperText = (pathName: string) => {
+    switch (pathName) {
+      case 'dashboard':
+        return (
+          <Stack>
+            <Typography fontSize={16} fontWeight={600}>
+              Dashboard
+            </Typography>
+            <Typography color="text.secondary" fontSize={12}>
+              Overview of platform activity and key metrics
+            </Typography>
+          </Stack>
+        );
+
+      case 'users':
+        return (
+          <Stack>
+            <Typography fontSize={16} fontWeight={600}>
+              Users
+            </Typography>
+            <Typography color="text.secondary">Manage users, roles, and account status</Typography>
+          </Stack>
+        );
+
+      case 'courses':
+        return (
+          <Stack>
+            <Typography fontSize={16} fontWeight={600}>
+              Courses
+            </Typography>
+            <Typography color="text.secondary" fontSize={12}>
+              Create, update, and organize learning content
+            </Typography>
+          </Stack>
+        );
+
+      case 'tests':
+        return (
+          <Stack>
+            <Typography fontSize={16} fontWeight={600}>
+              Tests
+            </Typography>
+            <Typography color="text.secondary" fontSize={12}>
+              Configure tests and passing criteria
+            </Typography>
+          </Stack>
+        );
+
+      case 'results':
+        return (
+          <Stack>
+            <Typography fontSize={16} fontWeight={600}>
+              Results
+            </Typography>
+            <Typography color="text.secondary" fontSize={12}>
+              Review user test results and performance
+            </Typography>
+          </Stack>
+        );
+
+      case 'certificates':
+        return (
+          <Stack>
+            <Typography fontSize={16} fontWeight={600}>
+              Certificates
+            </Typography>
+            <Typography color="text.secondary" fontSize={12}>
+              Approve and manage issued certificates
+            </Typography>
+          </Stack>
+        );
+
+      case 'transactions':
+        return (
+          <Stack>
+            <Typography fontSize={16} fontWeight={600}>
+              Transactions
+            </Typography>
+            <Typography color="text.secondary" fontSize={12}>
+              Track payments and revenue history
+            </Typography>
+          </Stack>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <AppBar
       position="sticky"
@@ -43,7 +148,7 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
         <IconButton edge="start" onClick={onDrawerToggle} sx={{ mr: 2, display: { lg: 'none' } }}>
           <MenuIcon />
         </IconButton>
-
+        {mapTitleAndHelperText(pathName ?? '')}
         <Box sx={{ flex: 1 }} />
 
         <IconButton
