@@ -294,6 +294,123 @@ export const mockTests: Test[] = [
       },
     ],
   },
+  {
+    id: '3',
+    courseId: '3',
+    title: 'React Fundamentals Test',
+    duration: 45,
+    passingScore: 75,
+    questions: [
+      {
+        id: 'q1',
+        text: 'Šta je JSX?',
+        options: ['JavaScript XML', 'Java Syntax Extension', 'JSON XML', 'JavaScript Extension'],
+        correctAnswer: 0,
+      },
+      {
+        id: 'q2',
+        text: 'Koja funkcija se koristi za kreiranje React komponente?',
+        options: ['createComponent()', 'React.create()', 'function Component()', 'new Component()'],
+        correctAnswer: 2,
+      },
+      {
+        id: 'q3',
+        text: 'Koji hook se koristi za state u funkcionalnim komponentama?',
+        options: ['useEffect', 'useState', 'useContext', 'useReducer'],
+        correctAnswer: 1,
+      },
+      {
+        id: 'q4',
+        text: 'Šta je props u React-u?',
+        options: ['Globalni state', 'Ulazni podaci komponente', 'CSS stilovi', 'Event handler'],
+        correctAnswer: 1,
+      },
+      {
+        id: 'q5',
+        text: 'Kako se koristi useEffect za mounting?',
+        options: ['useEffect(() => {})', 'useEffect(() => {}, [])', 'useEffect([])', 'useEffect({})'],
+        correctAnswer: 1,
+      },
+    ],
+  },
+  {
+    id: '4',
+    courseId: '4',
+    title: 'React Fundamentals Test',
+    duration: 45,
+    passingScore: 75,
+    questions: [
+      {
+        id: 'q1',
+        text: 'Šta je JSX?',
+        options: ['JavaScript XML', 'Java Syntax Extension', 'JSON XML', 'JavaScript Extension'],
+        correctAnswer: 0,
+      },
+      {
+        id: 'q2',
+        text: 'Koja funkcija se koristi za kreiranje React komponente?',
+        options: ['createComponent()', 'React.create()', 'function Component()', 'new Component()'],
+        correctAnswer: 2,
+      },
+      {
+        id: 'q3',
+        text: 'Koji hook se koristi za state u funkcionalnim komponentama?',
+        options: ['useEffect', 'useState', 'useContext', 'useReducer'],
+        correctAnswer: 1,
+      },
+      {
+        id: 'q4',
+        text: 'Šta je props u React-u?',
+        options: ['Globalni state', 'Ulazni podaci komponente', 'CSS stilovi', 'Event handler'],
+        correctAnswer: 1,
+      },
+      {
+        id: 'q5',
+        text: 'Kako se koristi useEffect za mounting?',
+        options: ['useEffect(() => {})', 'useEffect(() => {}, [])', 'useEffect([])', 'useEffect({})'],
+        correctAnswer: 1,
+      },
+    ],
+  },
+  {
+    id: '5',
+    courseId: '5',
+    title: 'React Fundamentals Test',
+    duration: 45,
+    passingScore: 75,
+    questions: [
+      {
+        id: 'q1',
+        text: 'Šta je JSX?',
+        options: ['JavaScript XML', 'Java Syntax Extension', 'JSON XML', 'JavaScript Extension'],
+        correctAnswer: 0,
+      },
+      {
+        id: 'q2',
+        text: 'Koja funkcija se koristi za kreiranje React komponente?',
+        options: ['createComponent()', 'React.create()', 'function Component()', 'new Component()'],
+        correctAnswer: 2,
+      },
+      {
+        id: 'q3',
+        text: 'Koji hook se koristi za state u funkcionalnim komponentama?',
+        options: ['useEffect', 'useState', 'useContext', 'useReducer'],
+        correctAnswer: 1,
+      },
+      {
+        id: 'q4',
+        text: 'Šta je props u React-u?',
+        options: ['Globalni state', 'Ulazni podaci komponente', 'CSS stilovi', 'Event handler'],
+        correctAnswer: 1,
+      },
+      {
+        id: 'q5',
+        text: 'Kako se koristi useEffect za mounting?',
+        options: ['useEffect(() => {})', 'useEffect(() => {}, [])', 'useEffect([])', 'useEffect({})'],
+        correctAnswer: 1,
+      },
+    ],
+  },
 ];
 
 // Mock User Tests

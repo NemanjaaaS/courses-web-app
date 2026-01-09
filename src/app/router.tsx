@@ -21,49 +21,49 @@ const createAppRouter = () =>
             {
               path: 'dashboard',
               lazy: async () => {
-                const { AdminDashboardRoute } = await import('./routes/admin/AdminDashboardRoute');
+                const { AdminDashboardRoute } = await import('./pages/admin/AdminDashboardPage');
                 return { Component: AdminDashboardRoute };
               },
             },
             {
               path: 'users',
               lazy: async () => {
-                const { UsersRoute } = await import('./routes/admin/UsersRoute');
+                const { UsersRoute } = await import('./pages/admin/AdminUsersPage');
                 return { Component: UsersRoute };
               },
             },
             {
               path: 'courses',
               lazy: async () => {
-                const { CoursesTableRoute } = await import('./routes/admin/CoursesTableRoute');
+                const { CoursesTableRoute } = await import('./pages/admin/AdminCoursesTablePage');
                 return { Component: CoursesTableRoute };
               },
             },
             {
               path: 'tests',
               lazy: async () => {
-                const { TestsRoute } = await import('./routes/admin/TestsRoute');
-                return { Component: TestsRoute };
+                const { AdminTestsPage } = await import('./pages/admin/AdminTestsPage');
+                return { Component: AdminTestsPage };
               },
             },
             {
               path: 'results',
               lazy: async () => {
-                const { ResultsRoute } = await import('./routes/admin/ResultsRoute');
+                const { ResultsRoute } = await import('./pages/admin/AdminResultsPage');
                 return { Component: ResultsRoute };
               },
             },
             {
               path: 'certificates',
               lazy: async () => {
-                const { CretificatesRoute } = await import('./routes/admin/CretificatesRoute');
+                const { CretificatesRoute } = await import('./pages/admin/AdminCretificatesPage');
                 return { Component: CretificatesRoute };
               },
             },
             {
               path: 'transactions',
               lazy: async () => {
-                const { TransactionsRoute } = await import('./routes/admin/TransactionsRoute');
+                const { TransactionsRoute } = await import('./pages/admin/AdminTransactionsPage');
                 return { Component: TransactionsRoute };
               },
             },
@@ -79,28 +79,28 @@ const createAppRouter = () =>
             {
               path: 'dashboard',
               lazy: async () => {
-                const { UserDashboardRoute } = await import('./routes/user/UserDashboardRoute');
+                const { UserDashboardRoute } = await import('./pages/user/UserDashboardRoute');
                 return { Component: UserDashboardRoute };
               },
             },
             {
               path: 'courses',
               lazy: async () => {
-                const { UserCoursesRoute } = await import('./routes/user/UserCoursesRoute');
+                const { UserCoursesRoute } = await import('./pages/user/UserCoursesRoute');
                 return { Component: UserCoursesRoute };
               },
             },
             {
               path: 'my-tests',
               lazy: async () => {
-                const { MyTestsRoute } = await import('./routes/user/MyTestsRoute');
+                const { MyTestsRoute } = await import('./pages/user/MyTestsRoute');
                 return { Component: MyTestsRoute };
               },
             },
             {
               path: 'certificates',
               lazy: async () => {
-                const { CertificatesRoute } = await import('./routes/user/CertificatesRoute');
+                const { CertificatesRoute } = await import('./pages/user/CertificatesRoute');
                 return { Component: CertificatesRoute };
               },
             },
