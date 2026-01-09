@@ -1,12 +1,33 @@
 // router.tsx or AppRouter.tsx
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import App from '../App';
+import { AuthRoot } from './pages/auth/AuthRoute';
 
 const createAppRouter = () =>
   createBrowserRouter([
     {
       path: '/',
       element: <Navigate to="/app" replace />,
+    },
+    {
+      path: '/auth',
+      element: <AuthRoot />,
+      children: [
+        {
+          path: 'register',
+          lazy: async () => {
+            const { RegisterPage } = await import('./pages/auth/RegisterPage');
+            return { Component: RegisterPage };
+          },
+        },
+        {
+          path: 'login',
+          lazy: async () => {
+            const { LoginPage } = await import('./pages/auth/LoginPage');
+            return { Component: LoginPage };
+          },
+        },
+      ],
     },
     {
       path: '/app',
