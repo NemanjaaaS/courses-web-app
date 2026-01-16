@@ -25,7 +25,14 @@ export const UsersRoute = () => {
   return (
     <Stack overflow="auto" height="calc(100vh - 65px)" p={1}>
       <Paper component={Stack} height="100%" width="100%" sx={{ borderRadius: 3 }}>
-        <DataGrid rows={users} columns={columns} loading={isLoading} disableRowSelectionOnClick sx={{ height: '100%', p: 1 }} />
+        <DataGrid
+          rows={users}
+          columns={columns}
+          loading={isLoading}
+          disableRowSelectionOnClick
+          sx={{ height: '100%', p: 1 }}
+          showToolbar
+        />
 
         <Menu
           anchorEl={menuAnchor}

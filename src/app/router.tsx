@@ -56,8 +56,8 @@ const createAppRouter = () =>
             {
               path: 'courses',
               lazy: async () => {
-                const { CoursesTableRoute } = await import('./pages/admin/AdminCoursesTablePage');
-                return { Component: CoursesTableRoute };
+                const { AdminCoursesPage } = await import('./pages/admin/AdminCoursesPage');
+                return { Component: AdminCoursesPage };
               },
             },
             {
@@ -70,8 +70,8 @@ const createAppRouter = () =>
             {
               path: 'results',
               lazy: async () => {
-                const { ResultsRoute } = await import('./pages/admin/AdminResultsPage');
-                return { Component: ResultsRoute };
+                const { AdminResultsPage } = await import('./pages/admin/AdminResultsPage');
+                return { Component: AdminResultsPage };
               },
             },
             {

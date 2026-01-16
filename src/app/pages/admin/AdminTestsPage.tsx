@@ -120,9 +120,9 @@ export const AdminTestsPage = () => {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, p: 2 }}>
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Skeleton key={i} variant="rounded" height={180} />
+          <Skeleton key={i} variant="rounded" animation={'wave'} height={180} />
         ))}
       </Box>
     );

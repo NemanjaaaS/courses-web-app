@@ -426,6 +426,16 @@ export const mockUserTests: UserTest[] = [
     status: 'completed',
   },
   {
+    id: '1',
+    userId: '1',
+    testId: '1',
+    courseName: 'Web Development Fundamentals',
+    score: 85,
+    passed: true,
+    completedAt: '2024-06-15',
+    status: 'completed',
+  },
+  {
     id: '2',
     userId: '1',
     testId: '2',
