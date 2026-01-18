@@ -72,7 +72,7 @@ const useSiteMap = ({ isAdmin }: { isAdmin: boolean }) => {
       {
         id: 'sidebar-nav-courses',
         title: 'Courses',
-        path: '/app/user/courses',
+        path: '/app/user/user-courses',
         icon: BookIcon,
       },
       {
@@ -138,7 +138,7 @@ type DrawerItemsProps = {
 };
 
 export const DrawerItems: React.FC<DrawerItemsProps> = () => {
-  const routes = useSiteMap({ isAdmin: true });
+  const routes = useSiteMap({ isAdmin: false });
   return (
     <Stack sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Logo */}

@@ -132,6 +132,41 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
           </Stack>
         );
 
+      // User
+      case 'my-tests':
+        return (
+          <Stack>
+            <Typography fontSize={16} fontWeight={600}>
+              My Tests
+            </Typography>
+            <Typography color="text.secondary" fontSize={12}>
+              Pass test and get certificate
+            </Typography>
+          </Stack>
+        );
+      case 'user-courses':
+        return (
+          <Stack>
+            <Typography fontSize={16} fontWeight={600}>
+              Courses
+            </Typography>
+            <Typography color="text.secondary" fontSize={12}>
+              Enroll courses
+            </Typography>
+          </Stack>
+        );
+      case 'certificates':
+        return (
+          <Stack>
+            <Typography fontSize={16} fontWeight={600}>
+              Certificates
+            </Typography>
+            <Typography color="text.secondary" fontSize={12}>
+              Review and download your certificates
+            </Typography>
+          </Stack>
+        );
+
       default:
         return null;
     }

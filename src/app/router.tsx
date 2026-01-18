@@ -100,36 +100,42 @@ const createAppRouter = () =>
             {
               path: 'dashboard',
               lazy: async () => {
-                const { UserDashboardRoute } = await import('./pages/user/UserDashboardRoute');
-                return { Component: UserDashboardRoute };
+                const { UserDashboardPage } = await import('./pages/user/UserDashboardPage');
+                return { Component: UserDashboardPage };
               },
             },
             {
-              path: 'courses',
+              path: 'user-courses',
               lazy: async () => {
-                const { UserCoursesRoute } = await import('./pages/user/UserCoursesRoute');
-                return { Component: UserCoursesRoute };
+                const { UserCoursesPage } = await import('./pages/user/UserCoursesPage');
+                return { Component: UserCoursesPage };
               },
             },
             {
               path: 'my-tests',
               lazy: async () => {
-                const { MyTestsRoute } = await import('./pages/user/MyTestsRoute');
-                return { Component: MyTestsRoute };
+                const { UserTestsPage } = await import('./pages/user/UserTestsPage');
+                return { Component: UserTestsPage };
+              },
+            },
+            {
+              path: 'my-tests/:id',
+              lazy: async () => {
+                const { TestTakingPage } = await import('./pages/user/TestTakingPage');
+                return { Component: TestTakingPage };
               },
             },
             {
               path: 'certificates',
               lazy: async () => {
-                const { CertificatesRoute } = await import('./pages/user/CertificatesRoute');
-                return { Component: CertificatesRoute };
+                const { UserCertificatesPage } = await import('./pages/user/UserCertificatesPage');
+                return { Component: UserCertificatesPage };
               },
             },
           ],
         },
       ],
     },
-
     {
       path: '*',
       element: <Navigate to="/app" replace />,
