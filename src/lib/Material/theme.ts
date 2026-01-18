@@ -4,7 +4,7 @@ import typography from './typography';
 import { darkPalette, lightPalette } from './palette';
 
 import { SelectField } from './SelectField';
-import TextField from './textField';
+import TextField from './TextField';
 import Button from './Button';
 const components = { MuiTextField: TextField, MuiSelect: SelectField, MuiButton: Button };
 

@@ -49,9 +49,9 @@ const useSiteMap = ({ isAdmin }: { isAdmin: boolean }) => {
         icon: ChartIcon,
       },
       {
-        id: 'sidebar-nav-certificates',
-        title: 'Certificates',
-        path: '/app/admin/certificates',
+        id: 'sidebar-nav-requests',
+        title: 'Requests',
+        path: '/app/admin/requests',
         icon: AwardIcon,
       },
       {

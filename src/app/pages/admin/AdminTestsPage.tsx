@@ -143,7 +143,7 @@ export const AdminTestsPage = () => {
       {/* Tests Grid */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 2 }}>
         {tests.map((test) => (
-          <Card key={test.id} sx={{ borderRadius: 2 }}>
+          <Card key={test.id} sx={{ borderRadius: 3 }}>
             <CardHeader
               avatar={
                 <Box sx={{ p: 1, borderRadius: 2, bgcolor: '#4338ca15' }}>

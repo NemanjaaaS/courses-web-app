@@ -75,17 +75,17 @@ const createAppRouter = () =>
               },
             },
             {
-              path: 'certificates',
+              path: 'requests',
               lazy: async () => {
-                const { CretificatesRoute } = await import('./pages/admin/AdminCretificatesPage');
-                return { Component: CretificatesRoute };
+                const { AdminRequestsPage } = await import('./pages/admin/AdminRequestsPage');
+                return { Component: AdminRequestsPage };
               },
             },
             {
               path: 'transactions',
               lazy: async () => {
-                const { TransactionsRoute } = await import('./pages/admin/AdminTransactionsPage');
-                return { Component: TransactionsRoute };
+                const { AdminTransactionsPage } = await import('./pages/admin/AdminTransactionsPage');
+                return { Component: AdminTransactionsPage };
               },
             },
           ],

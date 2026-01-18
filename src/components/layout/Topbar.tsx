@@ -108,14 +108,14 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
           </Stack>
         );
 
-      case 'certificates':
+      case 'requests':
         return (
           <Stack>
             <Typography fontSize={16} fontWeight={600}>
-              Certificates
+              Requests
             </Typography>
             <Typography color="text.secondary" fontSize={12}>
-              Approve and manage issued certificates
+              Approve and manage issued requests
             </Typography>
           </Stack>
         );
