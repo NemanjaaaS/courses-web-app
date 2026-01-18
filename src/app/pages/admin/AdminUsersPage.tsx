@@ -23,14 +23,14 @@ export const UsersRoute = () => {
   const columns = getUserColumns(handleMenuOpen);
 
   return (
-    <Stack overflow="auto" height="calc(100vh - 65px)" p={1}>
+    <Stack overflow="auto" height="calc(100vh - 65px)" p={2}>
       <Paper component={Stack} height="100%" width="100%" sx={{ borderRadius: 3 }}>
         <DataGrid
           rows={users}
           columns={columns}
           loading={isLoading}
           disableRowSelectionOnClick
-          sx={{ height: '100%', p: 1 }}
+          sx={{ height: '100%', p: 1, borderRadius: 3 }}
           showToolbar
         />
 
