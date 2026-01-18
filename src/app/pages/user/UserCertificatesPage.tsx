@@ -20,8 +20,8 @@ export const UserCertificatesPage = () => {
       {userCertificates.length > 0 ? (
         <Grid container spacing={3}>
           {userCertificates.map((cert) => (
-            <Grid size={{ xs: 12, sm: 6 }} key={cert.id}>
-              <Card>
+            <Grid size={{ xs: 12, sm: 6 }} key={cert.id} sx={{ borderRadius: 3 }}>
+              <Card sx={{ borderRadius: 3 }}>
                 {/* Certificate Preview */}
                 <Box
                   sx={{
@@ -63,34 +63,6 @@ export const UserCertificatesPage = () => {
                       {cert.userName}
                     </Typography>
                   </Box>
-
-                  {/* Decorative corners */}
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: 60,
-                      height: 60,
-                      borderLeft: 4,
-                      borderTop: 4,
-                      borderColor: 'primary.light',
-                      borderRadius: '8px 0 0 0',
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      bottom: 0,
-                      right: 0,
-                      width: 60,
-                      height: 60,
-                      borderRight: 4,
-                      borderBottom: 4,
-                      borderColor: 'primary.light',
-                      borderRadius: '0 0 8px 0',
-                    }}
-                  />
                 </Box>
 
                 {/* Certificate Info */}
