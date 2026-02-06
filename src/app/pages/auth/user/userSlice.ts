@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { setBearerToken, unsetBearerToken } from './axiosInstance';
-import type { User } from '../../lib/mockData';
-import { api } from './api';
-import type { RootState } from './store';
+import type { User } from '../../../../lib/mockData';
+import { setBearerToken, unsetBearerToken } from '../../../api/axiosInstance';
+import { api } from '../../../api/api';
+import { InitialUserModel } from './UserModal';
+import type { RootState } from '../../../api/store';
 
 export const TOKEN_STORAGE_KEY = 'jwt_access_token';
 
@@ -45,7 +46,7 @@ export const initializeAuth = createAsyncThunk<{ user: User; token: string } | n
 
   // ako želiš kasnije → fetch profile
   return {
-    // user: InitialUserModel(),
+    user: InitialUserModel(),
     token,
   };
 });
@@ -61,7 +62,7 @@ type State = {
 };
 
 const initialState: State = {
-  //   user: InitialUserModel(),
+  user: InitialUserModel(),
   token: null,
   isAuthenticated: false,
   loading: false,
@@ -80,7 +81,7 @@ export const userSlice = createSlice({
       state.isAuthenticated = true;
     },
     logout: (state) => {
-      //   state.user = InitialUserModel();
+      state.user = InitialUserModel();
       state.token = null;
       state.isAuthenticated = false;
       unsetBearerToken();

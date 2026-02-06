@@ -9,7 +9,6 @@ export const axiosBaseQuery =
   ({ baseUrl } = { baseUrl: apiUrl }): BaseQueryFn<AxiosRequestConfig, unknown, ErrorResponse> =>
   async ({ url, method, data, params }) => {
     try {
-      console.log(apiUrl);
       const result = await axiosInstance({
         url: baseUrl + url,
         method,

@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import type { NavigateFunction } from 'react-router-dom';
-import { TOKEN_STORAGE_KEY } from './userSlice';
+import { TOKEN_STORAGE_KEY } from '../pages/auth/user/userSlice';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
