@@ -9,6 +9,7 @@ import {
   School as SchoolIcon,
   ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
+import { useLoginMutation } from '../../api/api';
 
 const loginSchema = z.object({
   email: z.email('Please enter a valid email address'),
@@ -29,9 +30,10 @@ export const LoginPage = () => {
       password: '',
     },
   });
-
+  const [login] = useLoginMutation();
   const onSubmit = async (data: LoginFormData) => {
-    console.log(data);
+    console.log('test');
+    await login({ email: data.email, password: data.password });
   };
 
   return (

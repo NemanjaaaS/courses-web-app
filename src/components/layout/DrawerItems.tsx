@@ -138,7 +138,7 @@ type DrawerItemsProps = {
 };
 
 export const DrawerItems: React.FC<DrawerItemsProps> = () => {
-  const routes = useSiteMap({ isAdmin: false });
+  const routes = useSiteMap({ isAdmin: true });
   return (
     <Stack sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Logo */}
