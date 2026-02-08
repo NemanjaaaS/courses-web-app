@@ -12,6 +12,8 @@ import {
   BarChart as ChartIcon,
   Receipt as TransactionIcon,
 } from '@mui/icons-material';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../app/pages/auth/user/userSlice';
 // -------------------------------------------------------------------
 // 1. Your sitemap hook
 // -------------------------------------------------------------------
@@ -138,7 +140,8 @@ type DrawerItemsProps = {
 };
 
 export const DrawerItems: React.FC<DrawerItemsProps> = () => {
-  const routes = useSiteMap({ isAdmin: true });
+  const role = useAppSelector(selectUser).role;
+  const routes = useSiteMap({ isAdmin: role === 'ADMIN' ? true : false });
   return (
     <Stack sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Logo */}

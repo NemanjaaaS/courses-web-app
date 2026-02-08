@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, TextField, Button, Typography, InputAdornment, CircularProgress, Stack } from '@mui/material';
+import { Box, TextField, Button, Typography, InputAdornment, CircularProgress, Stack, IconButton } from '@mui/material';
 import {
   Email as EmailIcon,
   Lock as LockIcon,
@@ -10,10 +10,15 @@ import {
   School as SchoolIcon,
   ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
+import { useRegisterMutation } from '../../api/api';
+import { toast } from 'react-toastify';
+import { useState } from 'react';
+import IconifyIcon from '../../../components/base/IconifyIcon';
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, 'Name must have at least 2 characters'),
+    firstName: z.string().min(2, 'Firstname must have at least 2 characters'),
+    lastName: z.string().min(2, 'Lastname must have at least 2 characters'),
     email: z.string().email('Please enter a valid email address'),
     password: z.string().min(6, 'Password must have at least 6 characters'),
     confirmPassword: z.string(),
@@ -23,7 +28,7 @@ const registerSchema = z
     path: ['confirmPassword'],
   });
 
-type RegisterFormData = z.infer<typeof registerSchema>;
+export type RegisterFormData = z.infer<typeof registerSchema>;
 
 export const RegisterPage = () => {
   const {
@@ -33,16 +38,27 @@ export const RegisterPage = () => {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
       confirmPassword: '',
     },
   });
-
+  const [register] = useRegisterMutation();
+  const navigate = useNavigate();
   const onSubmit = async (data: RegisterFormData) => {
-    console.log(data);
+    try {
+      await register(data).unwrap();
+      toast.success('You register succesfully!');
+      navigate('/auth/login');
+    } catch {
+      toast.error('Error while register');
+    }
   };
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showPasswordConf, setShowPasswordConf] = useState<boolean>(false);
 
   return (
     <Box
@@ -81,15 +97,37 @@ export const RegisterPage = () => {
           <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%' }}>
             <Stack spacing={2.5}>
               <Controller
-                name="name"
+                name="firstName"
                 control={control}
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="Full name"
+                    label="First name"
                     fullWidth
-                    error={!!errors.name}
-                    helperText={errors.name?.message}
+                    error={!!errors.firstName}
+                    helperText={errors.firstName?.message}
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <PersonIcon color="action" />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                  />
+                )}
+              />
+              <Controller
+                name="lastName"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Last name"
+                    fullWidth
+                    error={!!errors.lastName}
+                    helperText={errors.lastName?.message}
                     slotProps={{
                       input: {
                         startAdornment: (
@@ -134,7 +172,7 @@ export const RegisterPage = () => {
                   <TextField
                     {...field}
                     label="Password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     fullWidth
                     error={!!errors.password}
                     helperText={errors.password?.message}
@@ -144,6 +182,11 @@ export const RegisterPage = () => {
                           <InputAdornment position="start">
                             <LockIcon color="action" />
                           </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <IconButton onClick={() => setShowPassword(!showPassword)}>
+                            {!showPassword ? <IconifyIcon icon={'mdi:eye'} /> : <IconifyIcon icon={'mdi:eye-off'} />}
+                          </IconButton>
                         ),
                       },
                     }}
@@ -158,7 +201,7 @@ export const RegisterPage = () => {
                   <TextField
                     {...field}
                     label="Confirm password"
-                    type="password"
+                    type={showPasswordConf ? 'text' : 'password'}
                     fullWidth
                     error={!!errors.confirmPassword}
                     helperText={errors.confirmPassword?.message}
@@ -168,6 +211,11 @@ export const RegisterPage = () => {
                           <InputAdornment position="start">
                             <LockIcon color="action" />
                           </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <IconButton onClick={() => setShowPasswordConf(!showPasswordConf)}>
+                            {!showPasswordConf ? <IconifyIcon icon={'mdi:eye'} /> : <IconifyIcon icon={'mdi:eye-off'} />}
+                          </IconButton>
                         ),
                       },
                     }}

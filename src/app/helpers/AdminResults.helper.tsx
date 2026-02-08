@@ -49,7 +49,7 @@ export const columns: GridColDef[] = [
 
     renderCell: (params: GridRenderCellParams) => (
       <Chip
-        label={params.value === 'completed' ? 'Završeno' : 'U toku'}
+        label={params.value === 'completed' ? 'Finished' : 'In Progress'}
         size="small"
         color={params.value === 'completed' ? 'success' : 'warning'}
         variant="outlined"

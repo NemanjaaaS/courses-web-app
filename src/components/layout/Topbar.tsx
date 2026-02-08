@@ -19,14 +19,14 @@ import {
   Logout as LogoutIcon,
 } from '@mui/icons-material';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { logout, selectUser } from '../../app/pages/auth/user/userSlice';
+import { useAppSelector } from '../../store/hooks';
 type TopbarProps = {
   onDrawerToggle: () => void;
 };
 export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
-  const user = {
-    name: 'Nemanja',
-    surname: 'Stefanovic',
-  };
+  const user = useAppSelector(selectUser);
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -38,10 +38,11 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+  const dispatch = useDispatch();
   const handleLogout = () => {
     handleMenuClose();
-    console.log('Log out');
-    navigate('/login');
+    dispatch(logout());
+    navigate('/auth/login');
   };
 
   const location = useLocation();
@@ -204,10 +205,10 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
               fontSize: 14,
             }}
           >
-            {user?.name?.charAt(0).toUpperCase() || 'U'}
+            {user?.firstName?.charAt(0).toUpperCase() || 'U'}
           </Avatar>
           <Typography variant="body2" fontWeight={500} sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {user?.name}
+            {user?.fullName}
           </Typography>
           <ArrowDownIcon fontSize="small" color="action" />
         </IconButton>
@@ -223,14 +224,14 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
             <ListItemIcon>
               <SettingsIcon fontSize="small" />
             </ListItemIcon>
-            Podešavanja
+            Settings
           </MenuItem>
           <Divider />
           <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
             <ListItemIcon>
               <LogoutIcon fontSize="small" color="error" />
             </ListItemIcon>
-            Odjavi se
+            Log out
           </MenuItem>
         </Menu>
       </Toolbar>

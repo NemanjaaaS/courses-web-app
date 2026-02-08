@@ -1,16 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import type { User } from '../../../../lib/mockData';
 import { setBearerToken, unsetBearerToken } from '../../../api/axiosInstance';
 import { api } from '../../../api/api';
 import { InitialUserModel } from './UserModal';
 import type { RootState } from '../../../api/store';
+import type { UserData } from '../types/User';
 
 export const TOKEN_STORAGE_KEY = 'jwt_access_token';
 
 // ================= THUNKS =================
 
 export const loginThunk = createAsyncThunk<
-  { user: User; token: string },
+  { user: UserData; token: string },
   { email: string; password: string },
   { rejectValue: string }
 >('auth/login', async (credentials, { dispatch, rejectWithValue }) => {
@@ -18,23 +18,25 @@ export const loginThunk = createAsyncThunk<
     const result = await dispatch(api.endpoints.login.initiate(credentials)).unwrap();
 
     // set token to axios interceptor + localStorage
-    await setBearerToken(result.token);
+    await setBearerToken(result.authenticationToken);
 
     dispatch(
       login({
-        user: result.user,
-        token: result.token,
-        isAuthenticated: true,
+        authenticationToken: result.authenticationToken,
+        refreshToken: result.refreshToken,
       })
     );
 
-    return result;
+    return {
+      user: InitialUserModel(),
+      token: result.authenticationToken,
+    };
   } catch {
     return rejectWithValue('Login failed');
   }
 });
 
-export const initializeAuth = createAsyncThunk<{ user: User; token: string } | null>('auth/initializeAuth', async () => {
+export const initializeAuth = createAsyncThunk<{ user: UserData; token: string } | null>('auth/initializeAuth', async () => {
   const token = localStorage.getItem(TOKEN_STORAGE_KEY);
 
   if (!token) {
@@ -54,7 +56,7 @@ export const initializeAuth = createAsyncThunk<{ user: User; token: string } | n
 // ================= STATE =================
 
 type State = {
-  user: User;
+  user: UserData;
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
@@ -108,10 +110,10 @@ export const { login, logout } = userSlice.actions;
 
 // ================= SELECTORS =================
 
-export const selectAuthState = (state: RootState) => state.auth;
-export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated;
-export const selectUser = (state: RootState) => state.auth.user;
-export const selectToken = (state: RootState) => state.auth.token;
+export const selectAuthState = (state: RootState) => state.reducer.auth;
+// export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated;
+export const selectUser = (state: RootState) => state.reducer.auth.user;
+export const selectToken = (state: RootState) => state.reducer.auth.token;
 
 // export default userSlice.reducer;
 // function InitialUserModel(): User {

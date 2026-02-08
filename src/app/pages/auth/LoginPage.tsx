@@ -1,15 +1,21 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, TextField, Button, Typography, InputAdornment, CircularProgress, Stack } from '@mui/material';
+import { Box, TextField, Button, Typography, InputAdornment, CircularProgress, Stack, IconButton } from '@mui/material';
 import {
   Email as EmailIcon,
   Lock as LockIcon,
   School as SchoolIcon,
   ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
-import { useLoginMutation } from '../../api/api';
+import { useGetUserInfoMutation, useLoginMutation } from '../../api/api';
+import { toast } from 'react-toastify';
+import { setBearerToken } from '../../api/axiosInstance';
+import { useDispatch } from 'react-redux';
+import { login } from './user/userSlice';
+import { useState } from 'react';
+import IconifyIcon from '../../../components/base/IconifyIcon';
 
 const loginSchema = z.object({
   email: z.email('Please enter a valid email address'),
@@ -30,10 +36,35 @@ export const LoginPage = () => {
       password: '',
     },
   });
-  const [login] = useLoginMutation();
+  const [userLogin] = useLoginMutation();
+  const [getUserInfo] = useGetUserInfoMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const onSubmit = async (data: LoginFormData) => {
-    console.log('test');
-    await login({ email: data.email, password: data.password });
+    try {
+      const tokenResponse = await userLogin({ email: data.email, password: data.password }).unwrap();
+      if (tokenResponse) {
+        await setBearerToken(tokenResponse.authenticationToken);
+
+        const userDetails = await getUserInfo().unwrap();
+        console.log(userDetails);
+        if (userDetails) {
+          dispatch(
+            login({
+              user: userDetails,
+              token: tokenResponse.authenticationToken,
+              isAuthenticated: true,
+            })
+          );
+
+          const role = userDetails.role;
+          navigate(role === 'ADMIN' ? '/app/admin/dashboard' : '/app/user/dashboard');
+        }
+      }
+    } catch {
+      toast.error('Faild to login');
+    }
   };
 
   return (
@@ -103,7 +134,7 @@ export const LoginPage = () => {
                   <TextField
                     {...field}
                     label="Password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     fullWidth
                     error={!!errors.password}
                     helperText={errors.password?.message}
@@ -113,6 +144,11 @@ export const LoginPage = () => {
                           <InputAdornment position="start">
                             <LockIcon color="action" />
                           </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <IconButton onClick={() => setShowPassword(!showPassword)}>
+                            {!showPassword ? <IconifyIcon icon={'mdi:eye'} /> : <IconifyIcon icon={'mdi:eye-off'} />}
+                          </IconButton>
                         ),
                       },
                     }}

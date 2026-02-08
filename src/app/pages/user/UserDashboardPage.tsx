@@ -5,16 +5,16 @@ import { mockUserTests } from '../../../lib/mockData';
 import { StatTrendCard } from '../../../components/widgets/StatTrendCardWidget';
 import PeopleIcon from '@mui/icons-material/People';
 import { ProgressCardWidget } from '../../../components/widgets/ProgressCardWidget';
+import { useAppSelector } from '../../../store/hooks';
+import { selectUser } from '../auth/user/userSlice';
 export const UserDashboardPage = () => {
+  const user = useAppSelector(selectUser);
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, p: 2, overflowY: 'auto', height: 'calc(100vh - 66px)' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2, overflowY: 'auto', height: 'calc(100vh - 66px)' }}>
       {/* Welcome Header */}
       <Box>
         <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Dobrodošli nazad, Nemanja! 👋
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Nastavite sa učenjem i napredujte ka svojim ciljevima.
+          {`Welcome back, ${user.firstName}! 👋`}
         </Typography>
       </Box>
 
@@ -55,7 +55,7 @@ export const UserDashboardPage = () => {
       {/* Progress Section */}
       <Box>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Vaš napredak
+          Progress Section
         </Typography>
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
@@ -73,7 +73,7 @@ export const UserDashboardPage = () => {
       {/* Recent Activity */}
       <Box>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Nedavna aktivnost
+          Recent Activity
         </Typography>
         <Card sx={{ borderRadius: 3 }}>
           <CardContent>
@@ -103,12 +103,12 @@ export const UserDashboardPage = () => {
                   <Box>
                     <Typography fontWeight="medium">{test.courseName}</Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {test.status === 'completed' ? `Rezultat: ${test.score}%` : 'U toku'}
+                      {test.status === 'completed' ? `Result: ${test.score}%` : 'In Progress'}
                     </Typography>
                   </Box>
                 </Box>
                 <Chip
-                  label={test.passed ? 'Položeno' : test.status === 'in-progress' ? 'U toku' : 'Nije položeno'}
+                  label={test.passed ? 'Pass' : test.status === 'in-progress' ? 'In Progress' : 'Failed'}
                   color={test.passed ? 'success' : test.status === 'in-progress' ? 'warning' : 'error'}
                   size="small"
                 />

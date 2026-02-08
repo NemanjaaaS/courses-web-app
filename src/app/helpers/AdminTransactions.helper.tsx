@@ -57,7 +57,7 @@ export const getTransactionsColumns = () => {
       width: 130,
       renderCell: (params: GridRenderCellParams) => (
         <Chip
-          label={params.value === 'completed' ? 'Završeno' : params.value === 'pending' ? 'Na čekanju' : 'Refundirano'}
+          label={params.value === 'completed' ? 'Finished' : params.value === 'pending' ? 'Na čekanju' : 'Refundirano'}
           size="small"
           color={params.value === 'completed' ? 'success' : params.value === 'pending' ? 'warning' : 'error'}
           variant="outlined"

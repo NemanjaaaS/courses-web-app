@@ -17,6 +17,8 @@ import {
   type Certificate,
 } from '../../lib/mockData';
 import { axiosBaseQuery } from './apiService';
+import type { UserData } from '../pages/auth/types/User';
+import type { RegisterFormData } from '../pages/auth/RegisterPage';
 
 // Simulate API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -38,18 +40,18 @@ export const api = createApi({
       providesTags: ['Users'],
     }),
 
-    toggleUserStatus: builder.mutation<User, string>({
-      queryFn: async (userId) => {
-        await delay(200);
-        const user = mockUsers.find((u) => u.id === userId);
-        if (user) {
-          user.status = user.status === 'active' ? 'inactive' : 'active';
-          return { data: user };
-        }
-        return { error: { status: 404, data: 'User not found' } };
-      },
-      invalidatesTags: ['Users'],
-    }),
+    // toggleUserStatus: builder.mutation<User, string>({
+    //   queryFn: async (userId) => {
+    //     await delay(200);
+    //     const user = mockUsers.find((u) => u.id === userId);
+    //     if (user) {
+    //       user.status = user.status === 'active' ? 'inactive' : 'active';
+    //       return { data: user };
+    //     }
+    //     return { error: { status: 404, data: 'User not found' } };
+    //   },
+    //   invalidatesTags: ['Users'],
+    // }),
 
     getCourses: builder.query<Course[], void>({
       queryFn: async () => {
@@ -140,11 +142,27 @@ export const api = createApi({
 
     // ================= REAL AUTH =================
 
-    login: builder.mutation<{ user: User; token: string }, { email: string; password: string }>({
+    login: builder.mutation<{ authenticationToken: string; refreshToken: string }, { email: string; password: string }>({
       query: (body) => ({
         url: `${authUrl}/authenticate`,
         method: 'POST',
         data: body,
+      }),
+    }),
+
+    register: builder.mutation<{ authenticationToken: string; refreshToken: string }, RegisterFormData>({
+      query: (data) => ({
+        url: `${authUrl}/register`,
+        method: 'POST',
+        data: data,
+      }),
+    }),
+
+    //GET User info
+    getUserInfo: builder.mutation<UserData, void>({
+      query: () => ({
+        url: '/user/me',
+        method: 'GET',
       }),
     }),
   }),
@@ -152,7 +170,7 @@ export const api = createApi({
 
 export const {
   useGetUsersQuery,
-  useToggleUserStatusMutation,
+  // useToggleUserStatusMutation,
   useGetCoursesQuery,
   useGetTestsQuery,
   useCreateTestMutation,
@@ -162,4 +180,6 @@ export const {
   // useApproveCertificateMutation,
   useGetDashboardStatsQuery,
   useLoginMutation,
+  useRegisterMutation,
+  useGetUserInfoMutation,
 } = api;

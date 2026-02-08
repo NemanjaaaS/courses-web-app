@@ -1,7 +1,7 @@
-import type { User } from '../../../../lib/mockData';
+import type { UserData } from '../types/User';
 
-function UserModel(data: Partial<User> = {}): User {
-  const defaultData: User = InitialUserModel();
+function UserModel(data: Partial<UserData> = {}): UserData {
+  const defaultData: UserData = InitialUserModel();
 
   return {
     ...defaultData,
@@ -9,16 +9,24 @@ function UserModel(data: Partial<User> = {}): User {
   };
 }
 
-export function InitialUserModel(): User {
+export function InitialUserModel(): UserData {
   return {
     id: '',
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
-    role: 'user',
-    joinedAt: '',
-    status: 'active',
-    enrolledCourses: 0,
-    completedTests: 0,
+    role: 'USER',
+    accountNonExpired: true,
+    accountNonLocked: true,
+    authorities: [
+      {
+        authority: 'USER',
+      },
+    ],
+    credentialsNonExpired: true,
+    enabled: true,
+    fullName: '',
+    username: '',
   };
 }
 

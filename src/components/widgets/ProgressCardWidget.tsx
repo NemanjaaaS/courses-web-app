@@ -8,9 +8,9 @@ interface ProgressCardProps {
 }
 
 const statusConfig = {
-  'in-progress': { label: 'U toku', color: 'warning' as const },
-  completed: { label: 'Završeno', color: 'success' as const },
-  'not-started': { label: 'Nije započeto', color: 'default' as const },
+  'in-progress': { label: 'In Progress', color: 'warning' as const },
+  completed: { label: 'Finished', color: 'success' as const },
+  'not-started': { label: 'Not Started', color: 'default' as const },
 };
 
 export const ProgressCardWidget = ({ title, current, total, status = 'not-started' }: ProgressCardProps) => {
