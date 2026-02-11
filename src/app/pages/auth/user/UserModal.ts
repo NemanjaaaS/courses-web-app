@@ -30,4 +30,8 @@ export function InitialUserModel(): UserData {
   };
 }
 
+export function isAuthenticated() {
+  return !!localStorage.getItem('authToken');
+}
+
 export default UserModel;

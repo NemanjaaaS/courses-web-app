@@ -18,12 +18,19 @@ export interface Course {
   description: string;
   category: string;
   duration: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
   enrolled: number;
   rating: number;
   price: number;
   image?: string;
   instructor: string;
+}
+export interface Page<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  number: number; // current page
+  size: number;
 }
 
 export interface Test {
@@ -146,7 +153,7 @@ export const mockCourses: Course[] = [
     description: 'Naučite osnove web razvoja sa HTML, CSS i JavaScript.',
     category: 'Programiranje',
     duration: '8 sati',
-    difficulty: 'beginner',
+    level: 'ADVANCED',
     enrolled: 245,
     rating: 4.8,
     price: 4999,
@@ -158,7 +165,7 @@ export const mockCourses: Course[] = [
     description: 'Napredni kurs za izgradnju modernih web aplikacija.',
     category: 'Programiranje',
     duration: '12 sati',
-    difficulty: 'intermediate',
+    level: 'INTERMEDIATE',
     enrolled: 189,
     rating: 4.9,
     price: 7999,
@@ -170,7 +177,7 @@ export const mockCourses: Course[] = [
     description: 'Analiza podataka i mašinsko učenje sa Python-om.',
     category: 'Data Science',
     duration: '15 sati',
-    difficulty: 'intermediate',
+    level: 'INTERMEDIATE',
     enrolled: 312,
     rating: 4.7,
     price: 8999,
@@ -182,7 +189,7 @@ export const mockCourses: Course[] = [
     description: 'Kreirajte korisničke interfejse koji oduševljavaju.',
     category: 'Dizajn',
     duration: '6 sati',
-    difficulty: 'beginner',
+    level: 'BEGINNER',
     enrolled: 178,
     rating: 4.6,
     price: 3999,
@@ -194,7 +201,7 @@ export const mockCourses: Course[] = [
     description: 'Docker, Kubernetes i AWS za moderne aplikacije.',
     category: 'DevOps',
     duration: '20 sati',
-    difficulty: 'advanced',
+    level: 'ADVANCED',
     enrolled: 134,
     rating: 4.8,
     price: 12999,
@@ -206,7 +213,7 @@ export const mockCourses: Course[] = [
     description: 'Zaštitite sisteme od modernih pretnji.',
     category: 'Security',
     duration: '10 sati',
-    difficulty: 'intermediate',
+    level: 'INTERMEDIATE',
     enrolled: 98,
     rating: 4.5,
     price: 6999,

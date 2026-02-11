@@ -48,7 +48,6 @@ export const LoginPage = () => {
         await setBearerToken(tokenResponse.authenticationToken);
 
         const userDetails = await getUserInfo().unwrap();
-        console.log(userDetails);
         if (userDetails) {
           dispatch(
             login({

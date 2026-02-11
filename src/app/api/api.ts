@@ -1,7 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import {
   mockUsers,
-  mockCourses,
   mockTests,
   mockUserTests,
   mockTransactions,
@@ -24,6 +23,7 @@ import type { RegisterFormData } from '../pages/auth/RegisterPage';
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const authUrl = '/auth';
+const coursesUrl = '/course';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -54,10 +54,10 @@ export const api = createApi({
     // }),
 
     getCourses: builder.query<Course[], void>({
-      queryFn: async () => {
-        await delay(300);
-        return { data: mockCourses };
-      },
+      query: () => ({
+        url: `${coursesUrl}/all`,
+        method: 'GET',
+      }),
       providesTags: ['Courses'],
     }),
 

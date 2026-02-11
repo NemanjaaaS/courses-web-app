@@ -4,8 +4,24 @@ import { api } from '../../../api/api';
 import { InitialUserModel } from './UserModal';
 import type { RootState } from '../../../api/store';
 import type { UserData } from '../types/User';
+import { jwtDecode } from 'jwt-decode';
+import type { JwtPayload } from 'jwt-decode';
 
 export const TOKEN_STORAGE_KEY = 'jwt_access_token';
+
+// Check if the access token is valid
+const isTokenValid = (accessToken: string) => {
+  if (!accessToken) return false;
+  try {
+    const decoded = jwtDecode<JwtPayload>(accessToken);
+    const expirationTime = decoded?.exp ?? 0;
+    const currentTime = Date.now() / 1000;
+    return expirationTime > currentTime;
+  } catch (error) {
+    console.error('Invalid token:', error);
+    return false;
+  }
+};
 
 // ================= THUNKS =================
 
@@ -19,16 +35,20 @@ export const loginThunk = createAsyncThunk<
 
     // set token to axios interceptor + localStorage
     await setBearerToken(result.authenticationToken);
+    localStorage.setItem(TOKEN_STORAGE_KEY, result.authenticationToken);
+
+    // Fetch user details after setting token
+    const userDetails = await dispatch(api.endpoints.getUserInfo.initiate()).unwrap();
 
     dispatch(
       login({
-        authenticationToken: result.authenticationToken,
-        refreshToken: result.refreshToken,
+        user: userDetails,
+        token: result.authenticationToken,
       })
     );
 
     return {
-      user: InitialUserModel(),
+      user: userDetails,
       token: result.authenticationToken,
     };
   } catch {
@@ -36,22 +56,41 @@ export const loginThunk = createAsyncThunk<
   }
 });
 
-export const initializeAuth = createAsyncThunk<{ user: UserData; token: string } | null>('auth/initializeAuth', async () => {
-  const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+export const initializeAuth = createAsyncThunk<{ user: UserData; token: string } | null, void, { rejectValue: string }>(
+  'auth/initializeAuth',
+  async (_, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
 
-  if (!token) {
-    await unsetBearerToken();
-    return null;
+    if (!token || !isTokenValid(token)) {
+      await unsetBearerToken();
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      return null;
+    }
+
+    await setBearerToken(token);
+
+    try {
+      // Validate token by fetching user info
+      const userDetails = await dispatch(api.endpoints.getUserInfo.initiate()).unwrap(); // Assuming getUserInfo endpoint
+
+      dispatch(
+        login({
+          user: userDetails,
+          token,
+        })
+      );
+
+      return {
+        user: userDetails,
+        token,
+      };
+    } catch {
+      await unsetBearerToken();
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      return rejectWithValue('Invalid token');
+    }
   }
-
-  await setBearerToken(token);
-
-  // ako želiš kasnije → fetch profile
-  return {
-    user: InitialUserModel(),
-    token,
-  };
-});
+);
 
 // ================= STATE =================
 
@@ -96,12 +135,33 @@ export const userSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginThunk.fulfilled, (state) => {
+      .addCase(loginThunk.fulfilled, (state, action) => {
         state.loading = false;
+        if (action.payload) {
+          state.user = action.payload.user;
+          state.token = action.payload.token;
+          state.isAuthenticated = true;
+        }
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? 'Login error';
+      })
+      .addCase(initializeAuth.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(initializeAuth.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload) {
+          state.user = action.payload.user;
+          state.token = action.payload.token;
+          state.isAuthenticated = true;
+        }
+      })
+      .addCase(initializeAuth.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? 'Initialization error';
       });
   },
 });
@@ -111,7 +171,6 @@ export const { login, logout } = userSlice.actions;
 // ================= SELECTORS =================
 
 export const selectAuthState = (state: RootState) => state.reducer.auth;
-// export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated;
 export const selectUser = (state: RootState) => state.reducer.auth.user;
 export const selectToken = (state: RootState) => state.reducer.auth.token;
 

@@ -45,7 +45,7 @@ export const AdminCoursesPage = () => {
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || course.category === categoryFilter;
-    const matchesDifficulty = difficultyFilter === 'all' || course.difficulty === difficultyFilter;
+    const matchesDifficulty = difficultyFilter === 'all' || course.level === difficultyFilter;
     return matchesSearch && matchesCategory && matchesDifficulty;
   });
 
@@ -115,7 +115,7 @@ export const AdminCoursesPage = () => {
         <FormControl size="small" sx={{ minWidth: 180 }}>
           <InputLabel>Kategorija</InputLabel>
           <Select value={categoryFilter} label="Kategorija" onChange={(e) => setCategoryFilter(e.target.value)}>
-            <MenuItem value="all">Sve kategorije</MenuItem>
+            <MenuItem value="all">All categories</MenuItem>
             {categories.map((cat) => (
               <MenuItem key={cat} value={cat}>
                 {cat}
@@ -124,19 +124,19 @@ export const AdminCoursesPage = () => {
           </Select>
         </FormControl>
         <FormControl size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Težina</InputLabel>
+          <InputLabel>difficulty</InputLabel>
           <Select value={difficultyFilter} label="Težina" onChange={(e) => setDifficultyFilter(e.target.value)}>
-            <MenuItem value="all">Sve težine</MenuItem>
-            <MenuItem value="beginner">Početnik</MenuItem>
-            <MenuItem value="intermediate">Srednji</MenuItem>
-            <MenuItem value="advanced">Napredni</MenuItem>
+            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="BEGINNER">Beginner</MenuItem>
+            <MenuItem value="INTERMEDIATE">Intermediate</MenuItem>
+            <MenuItem value="ADVANCED">Advanced</MenuItem>
           </Select>
         </FormControl>
       </Stack>
 
       {/* Results count */}
       <Typography variant="body2" color="text.secondary">
-        Pronađeno {filteredCourses.length} kurseva
+        Found {filteredCourses.length} courses
       </Typography>
 
       {/* Scrollable courses section */}

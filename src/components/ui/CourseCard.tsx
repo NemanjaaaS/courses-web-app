@@ -11,15 +11,15 @@ interface CourseCardProps {
 }
 
 const difficultyColors = {
-  beginner: 'success' as const,
-  intermediate: 'warning' as const,
-  advanced: 'error' as const,
+  BEGINNER: 'success' as const,
+  INTERMEDIATE: 'warning' as const,
+  ADVANCED: 'error' as const,
 };
 
 const difficultyLabels = {
-  beginner: 'Početnik',
-  intermediate: 'Srednji',
-  advanced: 'Napredni',
+  BEGINNER: 'Beginner',
+  INTERMEDIATE: 'Intermediate',
+  ADVANCED: 'Advanced',
 };
 
 export function CourseCard({ course, onEnroll, enrolled }: CourseCardProps) {
@@ -46,8 +46,8 @@ export function CourseCard({ course, onEnroll, enrolled }: CourseCardProps) {
           }}
         >
           <Chip
-            label={difficultyLabels[course.difficulty]}
-            color={difficultyColors[course.difficulty]}
+            label={difficultyLabels[course.level]}
+            color={difficultyColors[course.level]}
             size="small"
             sx={{ position: 'absolute', top: 12, right: 12 }}
           />
