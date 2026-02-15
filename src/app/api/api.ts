@@ -18,12 +18,14 @@ import {
 import { axiosBaseQuery } from './apiService';
 import type { UserData } from '../pages/auth/types/User';
 import type { RegisterFormData } from '../pages/auth/RegisterPage';
+import type { NewCourse } from '../pages/admin/AdminCoursesPage';
 
 // Simulate API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const authUrl = '/auth';
 const coursesUrl = '/course';
+const adminUrl = '/admin';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -59,6 +61,15 @@ export const api = createApi({
         method: 'GET',
       }),
       providesTags: ['Courses'],
+    }),
+
+    createCourse: builder.mutation<Course, NewCourse>({
+      query: (data) => ({
+        url: `${adminUrl}/create-course`,
+        method: 'POST',
+        data: data,
+      }),
+      invalidatesTags: ['Courses'],
     }),
 
     getTests: builder.query<Test[], void>({
@@ -172,6 +183,7 @@ export const {
   useGetUsersQuery,
   // useToggleUserStatusMutation,
   useGetCoursesQuery,
+  useCreateCourseMutation,
   useGetTestsQuery,
   useCreateTestMutation,
   useGetUserTestsQuery,

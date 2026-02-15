@@ -24,13 +24,30 @@ import AddIcon from '@mui/icons-material/Add';
 import { toast } from 'react-toastify';
 import { CourseCard } from '../../../components/ui/CourseCard';
 import { useForm, Controller } from 'react-hook-form';
-import { useGetCoursesQuery } from '../../api/api';
+import { useCreateCourseMutation, useGetCoursesQuery } from '../../api/api';
 
-type NewCourse = {
+export type NewCourse = {
   title: string;
-  description: string;
+  shortDescription: string;
+  category: 'PROGRAMMING' | 'DATA_SCIENCE' | 'DESIGN' | 'DEVOPS' | 'SECURITY';
+  level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+  durationHours: number;
   price: number;
 };
+
+const categoryOptions = [
+  { id: 1, label: 'Programming', value: 'PROGRAMMING' },
+  { id: 2, label: 'Data Science', value: 'DATA_SCIENCE' },
+  { id: 3, label: 'Design', value: 'DESIGN' },
+  { id: 4, label: 'DevOps', value: 'DEVOPS' },
+  { id: 5, label: 'Security', value: 'SECURITY' },
+];
+
+const levelOptions = [
+  { id: 1, label: 'Begginer', value: 'BEGINNER' },
+  { id: 2, label: 'Intermediate', value: 'INTERMEDIATE' },
+  { id: 3, label: 'Advanced', value: 'Advanced' },
+];
 
 export const AdminCoursesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,6 +55,7 @@ export const AdminCoursesPage = () => {
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { data: courses = [], isLoading: coursesLoading } = useGetCoursesQuery();
+  const [createCourse] = useCreateCourseMutation();
   const categories = [...new Set(courses.map((c) => c.category))];
 
   const filteredCourses = courses.filter((course) => {
@@ -62,14 +80,21 @@ export const AdminCoursesPage = () => {
   } = useForm<NewCourse>({
     defaultValues: {
       title: '',
-      description: '',
+      shortDescription: '',
+      category: undefined,
+      level: undefined,
       price: undefined,
     },
   });
 
-  const onSubmit = (data: NewCourse) => {
-    console.log(data);
-    toast.success('Kurs je uspešno kreiran');
+  const onSubmit = async (data: NewCourse) => {
+    try {
+      await createCourse(data).unwrap();
+      setIsDialogOpen(false);
+      toast.success('Kurs je uspešno kreiran');
+    } catch {
+      toast.error('Faild to create course!');
+    }
   };
 
   const isLoading = coursesLoading;
@@ -186,9 +211,9 @@ export const AdminCoursesPage = () => {
                 )}
               />
               <Controller
-                name="description"
+                name="shortDescription"
                 control={control}
-                rules={{ required: 'Opis je obavezan' }}
+                rules={{ required: 'Description is required' }}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -196,15 +221,50 @@ export const AdminCoursesPage = () => {
                     fullWidth
                     multiline
                     rows={3}
-                    error={!!errors.description}
-                    helperText={errors.description?.message}
+                    error={!!errors.shortDescription}
+                    helperText={errors.shortDescription?.message}
                   />
                 )}
               />
+              <Grid container size={12}>
+                <Grid size={6}>
+                  <Controller
+                    name="category"
+                    control={control}
+                    rules={{ required: 'Category is required' }}
+                    render={({ field }) => (
+                      <Select {...field} label="Category" sx={{ width: '100%' }}>
+                        {categoryOptions.map((cat) => (
+                          <MenuItem key={cat.id} value={cat.value}>
+                            {cat.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                </Grid>
+                <Grid size={6}>
+                  <Controller
+                    name="level"
+                    control={control}
+                    rules={{ required: 'Level is required' }}
+                    render={({ field }) => (
+                      <Select {...field} label="Level" sx={{ width: '100%' }}>
+                        {levelOptions.map((level) => (
+                          <MenuItem key={level.id} value={level.value}>
+                            {level.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                </Grid>
+              </Grid>
+
               <Controller
                 name="price"
                 control={control}
-                rules={{ required: 'Cena je obavezna', min: { value: 0, message: 'Cena mora biti pozitivna' } }}
+                rules={{ required: 'Price is required', min: { value: 0, message: 'Price must be positive number' } }}
                 render={({ field }) => (
                   <TextField
                     {...field}
