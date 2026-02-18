@@ -5,7 +5,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { mockCourses, mockTests } from '../../../lib/mockData';
+import { mockCourses, mockTests } from '../../../lib/types';
 
 export const UserTestsPage = () => {
   const navigate = useNavigate();

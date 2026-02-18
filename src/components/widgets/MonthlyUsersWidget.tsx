@@ -1,6 +1,6 @@
 import { LineChart } from '@mui/x-charts/LineChart';
 import { Card, CardContent, Typography } from '@mui/material';
-import { monthlyStats } from '../../lib/mockData';
+import { monthlyStats } from '../../lib/types';
 
 export default function MonthlyUsersChart() {
   return (

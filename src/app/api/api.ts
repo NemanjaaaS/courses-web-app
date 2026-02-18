@@ -1,7 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import {
   mockUsers,
-  mockTests,
   mockUserTests,
   mockTransactions,
   mockCertificates,
@@ -14,11 +13,13 @@ import {
   type UserTest,
   type Transaction,
   type Certificate,
-} from '../../lib/mockData';
+  type TestList,
+} from '../../lib/types';
 import { axiosBaseQuery } from './apiService';
 import type { UserData } from '../pages/auth/types/User';
 import type { RegisterFormData } from '../pages/auth/RegisterPage';
 import type { NewCourse } from '../pages/admin/AdminCoursesPage';
+import type { TestFormData } from '../pages/admin/AdminTestsPage';
 
 // Simulate API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -26,6 +27,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const authUrl = '/auth';
 const coursesUrl = '/course';
 const adminUrl = '/admin';
+const testsUrl = '/test';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -72,24 +74,35 @@ export const api = createApi({
       invalidatesTags: ['Courses'],
     }),
 
-    getTests: builder.query<Test[], void>({
-      queryFn: async () => {
-        await delay(300);
-        return { data: mockTests };
-      },
+    deleteCourse: builder.mutation<string, number>({
+      query: (courseId) => ({
+        url: `${adminUrl}/delete-course/${courseId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Courses'],
+    }),
+
+    getTests: builder.query<TestList[], void>({
+      query: () => ({
+        url: `${testsUrl}/all`,
+      }),
       providesTags: ['Tests'],
     }),
 
-    createTest: builder.mutation<Test, Omit<Test, 'id'>>({
-      queryFn: async (newTest) => {
-        await delay(300);
-        const test: Test = {
-          id: `t${Date.now()}`,
-          ...newTest,
-        };
-        mockTests.push(test);
-        return { data: test };
-      },
+    createTest: builder.mutation<Test, TestFormData>({
+      query: (test) => ({
+        url: `${adminUrl}/create-test`,
+        method: 'POST',
+        data: test,
+      }),
+      invalidatesTags: ['Tests'],
+    }),
+
+    deleteTest: builder.mutation<string, number>({
+      query: (testId) => ({
+        url: `${adminUrl}/delete-test/${testId}`,
+        method: 'DELETE',
+      }),
       invalidatesTags: ['Tests'],
     }),
 
@@ -184,6 +197,8 @@ export const {
   // useToggleUserStatusMutation,
   useGetCoursesQuery,
   useCreateCourseMutation,
+  useDeleteCourseMutation,
+  useDeleteTestMutation,
   useGetTestsQuery,
   useCreateTestMutation,
   useGetUserTestsQuery,

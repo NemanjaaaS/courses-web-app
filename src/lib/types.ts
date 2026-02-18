@@ -15,9 +15,9 @@ export interface User {
 export interface Course {
   id: string;
   title: string;
-  description: string;
+  shortDescription: string;
   category: string;
-  duration: string;
+  durationHours: string;
   level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
   enrolled: number;
   rating: number;
@@ -40,6 +40,16 @@ export interface Test {
   questions: Question[];
   duration: number; // in minutes
   passingScore: number;
+}
+
+export interface TestList {
+  id: string;
+  course: Course;
+  title: string;
+  numberOfQuestions: number;
+  durationMinutes: number; // in minutes
+  passingScorePercentage: number;
+  createdAt: string;
 }
 
 export interface Question {
@@ -150,9 +160,9 @@ export const mockCourses: Course[] = [
   {
     id: '1',
     title: 'Web Development Fundamentals',
-    description: 'Naučite osnove web razvoja sa HTML, CSS i JavaScript.',
+    shortDescription: 'Naučite osnove web razvoja sa HTML, CSS i JavaScript.',
     category: 'Programiranje',
-    duration: '8 sati',
+    durationHours: '8 sati',
     level: 'ADVANCED',
     enrolled: 245,
     rating: 4.8,
@@ -162,9 +172,9 @@ export const mockCourses: Course[] = [
   {
     id: '2',
     title: 'React & TypeScript Mastery',
-    description: 'Napredni kurs za izgradnju modernih web aplikacija.',
+    shortDescription: 'Napredni kurs za izgradnju modernih web aplikacija.',
     category: 'Programiranje',
-    duration: '12 sati',
+    durationHours: '12 sati',
     level: 'INTERMEDIATE',
     enrolled: 189,
     rating: 4.9,
@@ -174,9 +184,9 @@ export const mockCourses: Course[] = [
   {
     id: '3',
     title: 'Python za Data Science',
-    description: 'Analiza podataka i mašinsko učenje sa Python-om.',
+    shortDescription: 'Analiza podataka i mašinsko učenje sa Python-om.',
     category: 'Data Science',
-    duration: '15 sati',
+    durationHours: '15 sati',
     level: 'INTERMEDIATE',
     enrolled: 312,
     rating: 4.7,
@@ -186,9 +196,9 @@ export const mockCourses: Course[] = [
   {
     id: '4',
     title: 'UI/UX Dizajn Principi',
-    description: 'Kreirajte korisničke interfejse koji oduševljavaju.',
+    shortDescription: 'Kreirajte korisničke interfejse koji oduševljavaju.',
     category: 'Dizajn',
-    duration: '6 sati',
+    durationHours: '6 sati',
     level: 'BEGINNER',
     enrolled: 178,
     rating: 4.6,
@@ -198,9 +208,9 @@ export const mockCourses: Course[] = [
   {
     id: '5',
     title: 'DevOps & Cloud Computing',
-    description: 'Docker, Kubernetes i AWS za moderne aplikacije.',
+    shortDescription: 'Docker, Kubernetes i AWS za moderne aplikacije.',
     category: 'DevOps',
-    duration: '20 sati',
+    durationHours: '20 sati',
     level: 'ADVANCED',
     enrolled: 134,
     rating: 4.8,
@@ -210,9 +220,9 @@ export const mockCourses: Course[] = [
   {
     id: '6',
     title: 'Cybersecurity Essentials',
-    description: 'Zaštitite sisteme od modernih pretnji.',
+    shortDescription: 'Zaštitite sisteme od modernih pretnji.',
     category: 'Security',
-    duration: '10 sati',
+    durationHours: '10 sati',
     level: 'INTERMEDIATE',
     enrolled: 98,
     rating: 4.5,

@@ -1,8 +1,13 @@
-import { Box, Card, CardContent, Typography, Button, Chip, Stack } from '@mui/material';
+import { Box, Card, CardContent, Typography, Button, Chip, Stack, IconButton } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import PeopleIcon from '@mui/icons-material/People';
 import StarIcon from '@mui/icons-material/Star';
-import type { Course } from '../../lib/mockData';
+import type { Course } from '../../lib/types';
+import { mapCategory } from '../../app/pages/admin/helpers/helperMethods';
+import { useDeleteCourseMutation } from '../../app/api/api';
+import { toast } from 'react-toastify';
+import IconifyIcon from '../base/IconifyIcon';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../app/pages/auth/user/userSlice';
 
 interface CourseCardProps {
   course: Course;
@@ -23,6 +28,16 @@ const difficultyLabels = {
 };
 
 export function CourseCard({ course, onEnroll, enrolled }: CourseCardProps) {
+  const [deleteCourse] = useDeleteCourseMutation();
+  const isAdmin = useAppSelector(selectUser).role === 'ADMIN';
+  const handleDeleteCouse = async (courseId: number) => {
+    try {
+      await deleteCourse(courseId).unwrap();
+      toast.success('Course deleted successfully!');
+    } catch {
+      toast.error('Failed to delete course');
+    }
+  };
   return (
     <Card
       sx={{
@@ -53,7 +68,7 @@ export function CourseCard({ course, onEnroll, enrolled }: CourseCardProps) {
           />
         </Box>
         <Typography variant="caption" color="primary" fontWeight="medium">
-          {course.category}
+          {mapCategory(course.category)}
         </Typography>
 
         <Typography
@@ -82,20 +97,14 @@ export function CourseCard({ course, onEnroll, enrolled }: CourseCardProps) {
             overflow: 'hidden',
           }}
         >
-          {course.description}
+          {course.shortDescription}
         </Typography>
 
         <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <AccessTimeIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
             <Typography variant="body2" color="text.secondary">
-              {course.duration}
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <PeopleIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
-            <Typography variant="body2" color="text.secondary">
-              {course.enrolled}
+              {course.durationHours}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -113,10 +122,14 @@ export function CourseCard({ course, onEnroll, enrolled }: CourseCardProps) {
               RSD
             </Typography>
           </Typography>
-          {onEnroll && (
+          {!isAdmin ? (
             <Button variant={enrolled ? 'outlined' : 'contained'} size="small" onClick={onEnroll}>
-              {enrolled ? 'Upisano' : 'Upiši se'}
+              {enrolled ? 'Enrolled' : 'Enroll Now'}
             </Button>
+          ) : (
+            <IconButton onClick={() => handleDeleteCouse(Number(course.id))}>
+              <IconifyIcon icon={'mdi:bin-outline'} color="red" />
+            </IconButton>
           )}
         </Box>
       </CardContent>

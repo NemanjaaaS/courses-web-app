@@ -4,7 +4,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { toast } from 'react-toastify';
-import { mockCertificates } from '../../../lib/mockData';
+import { mockCertificates } from '../../../lib/types';
 import { DataGrid } from '@mui/x-data-grid';
 import { getRequestsColumns } from '../../helpers/AdminRequests.helper';
 

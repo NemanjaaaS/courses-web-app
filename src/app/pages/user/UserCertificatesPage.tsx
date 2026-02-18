@@ -3,7 +3,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import DownloadIcon from '@mui/icons-material/Download';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import SchoolIcon from '@mui/icons-material/School';
-import { mockCertificates } from '../../../lib/mockData';
+import { mockCertificates } from '../../../lib/types';
 import { toast } from 'react-toastify';
 
 export const UserCertificatesPage = () => {

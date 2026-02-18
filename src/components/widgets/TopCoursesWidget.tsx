@@ -1,6 +1,6 @@
 import { BarChart } from '@mui/x-charts/BarChart';
 import { Card, CardContent, Typography } from '@mui/material';
-import { topCourses } from '../../lib/mockData';
+import { topCourses } from '../../lib/types';
 
 export default function TopCoursesChart() {
   return (

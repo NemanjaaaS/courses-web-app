@@ -19,7 +19,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { mockCourses, mockTests } from '../../../lib/mockData';
+import { mockCourses, mockTests } from '../../../lib/types';
 import { toast } from 'react-toastify';
 
 export const TestTakingPage = () => {

@@ -1,6 +1,6 @@
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Card, CardContent, Typography } from '@mui/material';
-import { testPassRates } from '../../lib/mockData';
+import { testPassRates } from '../../lib/types';
 
 export default function TestPassRateChart() {
   return (

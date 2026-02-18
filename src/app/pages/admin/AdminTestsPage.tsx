@@ -28,6 +28,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Fab,
+  Grid,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -36,29 +37,31 @@ import {
   CheckCircle as CheckIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material';
-import { useGetTestsQuery, useGetCoursesQuery, useCreateTestMutation } from '../../api/api';
+import { useGetTestsQuery, useGetCoursesQuery, useCreateTestMutation, useDeleteTestMutation } from '../../api/api';
 import { toast } from 'react-toastify';
+import IconifyIcon from '../../../components/base/IconifyIcon';
 
 const questionSchema = z.object({
-  text: z.string().min(1, 'Unesite tekst pitanja'),
-  options: z.array(z.string().min(1, 'Unesite odgovor')).length(4),
+  text: z.string().min(1, 'Enter question text'),
+  options: z.array(z.string().min(1, 'Enter answer')).length(4),
   correctAnswer: z.number().min(0).max(3),
 });
 
 const testSchema = z.object({
-  title: z.string().min(1, 'Unesite naziv testa'),
-  courseId: z.string().min(1, 'Izaberite kurs'),
-  duration: z.number().min(5, 'Trajanje mora biti najmanje 5 minuta'),
-  passingScore: z.number().min(1).max(100, 'Prolazni prag mora biti između 1 i 100'),
-  questions: z.array(questionSchema).min(1, 'Dodajte bar jedno pitanje'),
+  title: z.string().min(1, 'Enter test title'),
+  courseId: z.number().min(1, 'Select course'),
+  durationMinutes: z.number().min(5, 'Duration must be at least 5 minutes'),
+  passingScorePercentage: z.number().min(1).max(100, 'Passing threshold must be between 1 and 100'),
+  createQuestionDTOS: z.array(questionSchema).min(1, 'Add at least one question'),
 });
 
-type TestFormData = z.infer<typeof testSchema>;
+export type TestFormData = z.infer<typeof testSchema>;
 
 export const AdminTestsPage = () => {
   const { data: tests = [], isLoading: testsLoading } = useGetTestsQuery();
   const { data: courses = [], isLoading: coursesLoading } = useGetCoursesQuery();
   const [createTest] = useCreateTestMutation();
+  const [deleteTest] = useDeleteTestMutation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const {
@@ -70,16 +73,16 @@ export const AdminTestsPage = () => {
     resolver: zodResolver(testSchema),
     defaultValues: {
       title: '',
-      courseId: '',
-      duration: 30,
-      passingScore: 70,
-      questions: [],
+      courseId: 0,
+      durationMinutes: 30,
+      passingScorePercentage: 70,
+      createQuestionDTOS: [],
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'questions',
+    name: 'createQuestionDTOS',
   });
 
   const addNewQuestion = () => {
@@ -90,30 +93,35 @@ export const AdminTestsPage = () => {
     });
   };
 
+  const handleDeleteTest = async (testId: number) => {
+    try {
+      await deleteTest(testId).unwrap();
+      toast.success('Test deleted successfully!');
+    } catch {
+      toast.error('Failed to delete test!');
+    }
+  };
+
   const onSubmit = async (data: TestFormData) => {
     try {
       await createTest({
         title: data.title,
         courseId: data.courseId,
-        duration: data.duration,
-        passingScore: data.passingScore,
-        questions: data.questions.map((q, index) => ({
+        durationMinutes: data.durationMinutes,
+        passingScorePercentage: data.passingScorePercentage,
+        createQuestionDTOS: data.createQuestionDTOS.map((q, index) => ({
           id: `q${Date.now()}_${index}`,
           text: q.text,
           options: q.options,
           correctAnswer: q.correctAnswer,
         })),
       }).unwrap();
-      toast.success('Test je uspešno kreiran');
+      toast.success('Test created successfully!');
       reset();
       setIsDialogOpen(false);
     } catch {
-      toast.error('Greška prilikom kreiranja testa');
+      toast.error('Failed to create test!');
     }
-  };
-
-  const getCourseTitle = (courseId: string) => {
-    return courses.find((c) => c.id === courseId)?.title || 'Nepoznat kurs';
   };
 
   const isLoading = testsLoading || coursesLoading;
@@ -150,26 +158,33 @@ export const AdminTestsPage = () => {
                   <TestIcon sx={{ color: '#4338ca' }} />
                 </Box>
               }
-              action={<Chip label={`${test.questions.length} pitanja`} size="small" />}
+              action={<Chip label={`${test.numberOfQuestions} questions`} size="small" />}
               title={test.title}
-              subheader={getCourseTitle(test.courseId)}
+              subheader={test.course.title}
               slotProps={{ title: { sx: { fontWeight: 600 } } }}
             />
             <CardContent>
-              <Stack direction="row" spacing={3}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <ClockIcon fontSize="small" color="action" />
-                  <Typography variant="body2" color="text.secondary">
-                    {test.duration} min
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <CheckIcon fontSize="small" color="action" />
-                  <Typography variant="body2" color="text.secondary">
-                    {test.passingScore}% za prolaz
-                  </Typography>
-                </Box>
-              </Stack>
+              <Grid container direction="row" spacing={3} justifyContent={'space-between'}>
+                <Grid container>
+                  <Grid sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <ClockIcon fontSize="small" color="action" />
+                    <Typography variant="body2" color="text.secondary">
+                      {test.durationMinutes} min
+                    </Typography>
+                  </Grid>
+                  <Grid sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <CheckIcon fontSize="small" color="action" />
+                    <Typography variant="body2" color="text.secondary">
+                      {test.passingScorePercentage}% to pass
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <Grid justifyContent={'end'} display={'flex'}>
+                  <IconButton onClick={() => handleDeleteTest(Number(test.id))}>
+                    <IconifyIcon icon={'mdi:bin-outline'} color="red" />
+                  </IconButton>
+                </Grid>
+              </Grid>
             </CardContent>
           </Card>
         ))}
@@ -186,7 +201,7 @@ export const AdminTestsPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogTitle>
             <Typography variant="h5" fontWeight={600}>
-              Kreiraj novi test
+              Create new test
             </Typography>
           </DialogTitle>
           <DialogContent dividers>
@@ -196,7 +211,7 @@ export const AdminTestsPage = () => {
                 name="title"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Naziv testa" fullWidth error={!!errors.title} helperText={errors.title?.message} />
+                  <TextField {...field} label="Test title" fullWidth error={!!errors.title} helperText={errors.title?.message} />
                 )}
               />
 
@@ -206,8 +221,8 @@ export const AdminTestsPage = () => {
                   control={control}
                   render={({ field }) => (
                     <FormControl fullWidth error={!!errors.courseId}>
-                      <InputLabel>Kurs</InputLabel>
-                      <Select {...field} label="Kurs">
+                      <InputLabel>Course</InputLabel>
+                      <Select {...field} label="Course">
                         {courses.map((course) => (
                           <MenuItem key={course.id} value={course.id}>
                             {course.title}
@@ -218,34 +233,34 @@ export const AdminTestsPage = () => {
                   )}
                 />
                 <Controller
-                  name="duration"
+                  name="durationMinutes"
                   control={control}
                   render={({ field }) => (
                     <TextField
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
-                      label="Trajanje (min)"
+                      label="Duration (min)"
                       type="number"
                       fullWidth
-                      error={!!errors.duration}
-                      helperText={errors.duration?.message}
+                      error={!!errors.durationMinutes}
+                      helperText={errors.durationMinutes?.message}
                     />
                   )}
                 />
               </Box>
 
               <Controller
-                name="passingScore"
+                name="passingScorePercentage"
                 control={control}
                 render={({ field }) => (
                   <TextField
                     {...field}
                     onChange={(e) => field.onChange(Number(e.target.value))}
-                    label="Prolazni prag (%)"
+                    label="Passing threshold (%)"
                     type="number"
                     fullWidth
-                    error={!!errors.passingScore}
-                    helperText={errors.passingScore?.message}
+                    error={!!errors.passingScorePercentage}
+                    helperText={errors.passingScorePercentage?.message}
                   />
                 )}
               />
@@ -255,40 +270,40 @@ export const AdminTestsPage = () => {
               {/* Questions */}
               <Box>
                 <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Pitanja ({fields.length})
+                  Questions ({fields.length})
                 </Typography>
 
                 {fields.map((field, qIndex) => (
                   <Paper key={field.id} variant="outlined" sx={{ p: 2, mb: 2, borderRadius: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                      <Typography fontWeight={500}>Pitanje {qIndex + 1}</Typography>
+                      <Typography fontWeight={500}>Question {qIndex + 1}</Typography>
                       <IconButton size="small" onClick={() => remove(qIndex)} color="error">
                         <DeleteIcon />
                       </IconButton>
                     </Box>
 
                     <Controller
-                      name={`questions.${qIndex}.text`}
+                      name={`createQuestionDTOS.${qIndex}.text`}
                       control={control}
                       render={({ field }) => (
                         <TextField
                           {...field}
-                          label="Tekst pitanja"
+                          label="Question text"
                           fullWidth
                           multiline
                           rows={2}
                           sx={{ mb: 2 }}
-                          error={!!errors.questions?.[qIndex]?.text}
+                          error={!!errors.createQuestionDTOS?.[qIndex]?.text}
                         />
                       )}
                     />
 
                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Odgovori (izaberite tačan):
+                      Answers (select correct):
                     </Typography>
 
                     <Controller
-                      name={`questions.${qIndex}.correctAnswer`}
+                      name={`createQuestionDTOS.${qIndex}.correctAnswer`}
                       control={control}
                       render={({ field: radioField }) => (
                         <RadioGroup value={radioField.value} onChange={(e) => radioField.onChange(Number(e.target.value))}>
@@ -297,15 +312,15 @@ export const AdminTestsPage = () => {
                               <Box key={optIndex} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <FormControlLabel value={optIndex} control={<Radio size="small" />} label="" sx={{ m: 0 }} />
                                 <Controller
-                                  name={`questions.${qIndex}.options.${optIndex}`}
+                                  name={`createQuestionDTOS.${qIndex}.options.${optIndex}`}
                                   control={control}
                                   render={({ field }) => (
                                     <TextField
                                       {...field}
                                       size="small"
-                                      placeholder={`Odgovor ${optIndex + 1}`}
+                                      placeholder={`Answer ${optIndex + 1}`}
                                       fullWidth
-                                      error={!!errors.questions?.[qIndex]?.options?.[optIndex]}
+                                      error={!!errors.createQuestionDTOS?.[qIndex]?.options?.[optIndex]}
                                     />
                                   )}
                                 />
@@ -319,21 +334,21 @@ export const AdminTestsPage = () => {
                 ))}
 
                 <Button variant="outlined" startIcon={<AddIcon />} onClick={addNewQuestion}>
-                  Dodaj pitanje
+                  Add question
                 </Button>
 
-                {errors.questions?.message && (
+                {errors.createQuestionDTOS?.message && (
                   <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-                    {errors.questions.message}
+                    {errors.createQuestionDTOS.message}
                   </Typography>
                 )}
               </Box>
             </Stack>
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>
-            <Button onClick={() => setIsDialogOpen(false)}>Otkaži</Button>
+            <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
             <Button type="submit" variant="contained" disabled={isSubmitting}>
-              Kreiraj test
+              Create test
             </Button>
           </DialogActions>
         </form>

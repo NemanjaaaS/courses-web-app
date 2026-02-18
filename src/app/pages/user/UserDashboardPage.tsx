@@ -1,7 +1,7 @@
 import { Box, Typography, Grid, Card, CardContent, Avatar, Chip } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 
-import { mockUserTests } from '../../../lib/mockData';
+import { mockUserTests } from '../../../lib/types';
 import { StatTrendCard } from '../../../components/widgets/StatTrendCardWidget';
 import PeopleIcon from '@mui/icons-material/People';
 import { ProgressCardWidget } from '../../../components/widgets/ProgressCardWidget';

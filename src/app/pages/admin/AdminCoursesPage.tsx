@@ -25,6 +25,7 @@ import { toast } from 'react-toastify';
 import { CourseCard } from '../../../components/ui/CourseCard';
 import { useForm, Controller } from 'react-hook-form';
 import { useCreateCourseMutation, useGetCoursesQuery } from '../../api/api';
+import { mapCategory } from './helpers/helperMethods';
 
 export type NewCourse = {
   title: string;
@@ -58,10 +59,10 @@ export const AdminCoursesPage = () => {
   const [createCourse] = useCreateCourseMutation();
   const categories = [...new Set(courses.map((c) => c.category))];
 
-  const filteredCourses = courses.filter((course) => {
+  const filteredCourses = courses?.filter((course) => {
     const matchesSearch =
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchQuery.toLowerCase());
+      course?.title?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+      course?.shortDescription?.toLowerCase().includes(searchQuery?.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || course.category === categoryFilter;
     const matchesDifficulty = difficultyFilter === 'all' || course.level === difficultyFilter;
     return matchesSearch && matchesCategory && matchesDifficulty;
@@ -73,10 +74,16 @@ export const AdminCoursesPage = () => {
     setDifficultyFilter('all');
   };
 
+  const handleCloseDialog = () => {
+    reset();
+    setIsDialogOpen(false);
+  };
+
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<NewCourse>({
     defaultValues: {
       title: '',
@@ -84,22 +91,21 @@ export const AdminCoursesPage = () => {
       category: undefined,
       level: undefined,
       price: undefined,
+      durationHours: undefined,
     },
   });
 
   const onSubmit = async (data: NewCourse) => {
     try {
       await createCourse(data).unwrap();
-      setIsDialogOpen(false);
+      handleCloseDialog();
       toast.success('Kurs je uspešno kreiran');
     } catch {
       toast.error('Faild to create course!');
     }
   };
 
-  const isLoading = coursesLoading;
-
-  if (isLoading) {
+  if (coursesLoading) {
     return (
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, p: 2 }}>
         {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -122,7 +128,7 @@ export const AdminCoursesPage = () => {
       {/* Filters */}
       <Stack direction={'row'} spacing={2}>
         <TextField
-          placeholder="Pretražite kurseve..."
+          placeholder="Search courses..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           size="small"
@@ -138,18 +144,18 @@ export const AdminCoursesPage = () => {
           }}
         />
         <FormControl size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Kategorija</InputLabel>
+          <InputLabel>Category</InputLabel>
           <Select value={categoryFilter} label="Kategorija" onChange={(e) => setCategoryFilter(e.target.value)}>
             <MenuItem value="all">All categories</MenuItem>
             {categories.map((cat) => (
               <MenuItem key={cat} value={cat}>
-                {cat}
+                {mapCategory(cat)}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
         <FormControl size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>difficulty</InputLabel>
+          <InputLabel>Difficulty</InputLabel>
           <Select value={difficultyFilter} label="Težina" onChange={(e) => setDifficultyFilter(e.target.value)}>
             <MenuItem value="all">All</MenuItem>
             <MenuItem value="BEGINNER">Beginner</MenuItem>
@@ -189,7 +195,7 @@ export const AdminCoursesPage = () => {
       {/* Create Course Dialog */}
       <Dialog
         open={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
+        onClose={() => handleCloseDialog()}
         maxWidth="md"
         fullWidth
         slotProps={{ paper: { sx: { borderRadius: 2, maxHeight: '90vh' } } }}
@@ -197,7 +203,7 @@ export const AdminCoursesPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogTitle>
             <Typography variant="h5" fontWeight={600}>
-              Kreiraj novi kurs
+              Create new course
             </Typography>
           </DialogTitle>
           <DialogContent dividers>
@@ -205,9 +211,15 @@ export const AdminCoursesPage = () => {
               <Controller
                 name="title"
                 control={control}
-                rules={{ required: 'Naziv je obavezan' }}
+                rules={{ required: 'Title is required' }}
                 render={({ field }) => (
-                  <TextField {...field} label="Naziv kursa" fullWidth error={!!errors.title} helperText={errors.title?.message} />
+                  <TextField
+                    {...field}
+                    label="Course title"
+                    fullWidth
+                    error={!!errors.title}
+                    helperText={errors.title?.message}
+                  />
                 )}
               />
               <Controller
@@ -217,7 +229,7 @@ export const AdminCoursesPage = () => {
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="Kratak opis"
+                    label="Short description"
                     fullWidth
                     multiline
                     rows={3}
@@ -226,20 +238,23 @@ export const AdminCoursesPage = () => {
                   />
                 )}
               />
-              <Grid container size={12}>
+              <Grid container size={12} spacing={2}>
                 <Grid size={6}>
                   <Controller
                     name="category"
                     control={control}
                     rules={{ required: 'Category is required' }}
                     render={({ field }) => (
-                      <Select {...field} label="Category" sx={{ width: '100%' }}>
-                        {categoryOptions.map((cat) => (
-                          <MenuItem key={cat.id} value={cat.value}>
-                            {cat.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      <FormControl fullWidth>
+                        <InputLabel id="category-label">Category</InputLabel>
+                        <Select {...field} labelId="category-label" id="category-select">
+                          {categoryOptions.map((cat) => (
+                            <MenuItem key={cat.id} value={cat.value}>
+                              {cat.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     )}
                   />
                 </Grid>
@@ -249,40 +264,64 @@ export const AdminCoursesPage = () => {
                     control={control}
                     rules={{ required: 'Level is required' }}
                     render={({ field }) => (
-                      <Select {...field} label="Level" sx={{ width: '100%' }}>
-                        {levelOptions.map((level) => (
-                          <MenuItem key={level.id} value={level.value}>
-                            {level.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      <FormControl fullWidth>
+                        <InputLabel id="category-label">Level</InputLabel>
+                        <Select {...field} label="Level" fullWidth>
+                          {levelOptions.map((level) => (
+                            <MenuItem key={level.id} value={level.value}>
+                              {level.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     )}
                   />
                 </Grid>
               </Grid>
-
-              <Controller
-                name="price"
-                control={control}
-                rules={{ required: 'Price is required', min: { value: 0, message: 'Price must be positive number' } }}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Cena"
-                    type="number"
-                    fullWidth
-                    error={!!errors.price}
-                    helperText={errors.price?.message}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+              <Grid container size={12} spacing={2}>
+                <Grid size={6}>
+                  <Controller
+                    name="price"
+                    control={control}
+                    rules={{ required: 'Price is required', min: { value: 0, message: 'Price must be positive number' } }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Price"
+                        type="number"
+                        fullWidth
+                        error={!!errors.price}
+                        helperText={errors.price?.message}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    )}
                   />
-                )}
-              />
+                </Grid>
+                <Grid size={6}>
+                  <Controller
+                    name="durationHours"
+                    control={control}
+                    rules={{ required: 'Time is required' }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Course duration"
+                        type="number"
+                        fullWidth
+                        rows={3}
+                        error={!!errors.durationHours}
+                        helperText={errors.durationHours?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
             </Stack>
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>
-            <Button onClick={() => setIsDialogOpen(false)}>Otkaži</Button>
+            <Button onClick={() => handleCloseDialog()}>Cancel</Button>
             <Button type="submit" variant="contained" disabled={isSubmitting}>
-              Kreiraj kurs
+              Create
             </Button>
           </DialogActions>
         </form>
