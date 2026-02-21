@@ -1,5 +1,7 @@
 // Mock data for the LMS application
 
+import type { UserData } from '../app/pages/auth/types/User';
+
 export interface User {
   id: string;
   name: string;
@@ -81,15 +83,36 @@ export interface Transaction {
   status: 'completed' | 'pending' | 'refunded';
 }
 
-export interface Certificate {
-  id: string;
-  userId: string;
+export interface Request {
+  id: number;
+  requestDate: string;
+  processedDate: string | null;
+  status: 'PENDING' | 'APPROVED';
+  user: UserData;
+  course: Course;
+}
+
+export interface RequestTableFE {
+  id: number;
+  requestDate: string;
+  processedDate: string | null;
+  status: 'PENDING' | 'APPROVED';
   userName: string;
   courseName: string;
-  issuedAt: string;
-  approvedAt?: string;
-  status: 'approved' | 'pending';
+  price: number;
 }
+
+export const mapRequestToTableFE = (backend: Request): RequestTableFE => {
+  return {
+    id: backend.id,
+    requestDate: backend.requestDate,
+    processedDate: backend.processedDate,
+    status: backend.status,
+    userName: backend.user.fullName,
+    courseName: backend.course.title,
+    price: backend.course.price,
+  };
+};
 
 // Mock Users
 export const mockUsers: User[] = [
@@ -544,34 +567,6 @@ export const mockTransactions: Transaction[] = [
     courseName: 'DevOps & Cloud Computing',
     amount: 12999,
     date: '2024-05-20',
-    status: 'pending',
-  },
-];
-
-// Mock Certificates
-export const mockCertificates: Certificate[] = [
-  {
-    id: '1',
-    userId: '1',
-    userName: 'Marko Petrović',
-    courseName: 'Web Development Fundamentals',
-    issuedAt: '2024-06-16',
-    status: 'approved',
-  },
-  {
-    id: '2',
-    userId: '1',
-    userName: 'Marko Petrović',
-    courseName: 'React & TypeScript Mastery',
-    issuedAt: '2024-07-21',
-    status: 'approved',
-  },
-  {
-    id: '3',
-    userId: '2',
-    userName: 'Ana Jovanović',
-    courseName: 'Web Development Fundamentals',
-    issuedAt: '2024-06-19',
     status: 'pending',
   },
 ];

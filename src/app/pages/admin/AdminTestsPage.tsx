@@ -211,7 +211,7 @@ export const AdminTestsPage = () => {
                 name="title"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Test title" fullWidth error={!!errors.title} helperText={errors.title?.message} />
+                  <TextField {...field} label="Title" fullWidth error={!!errors.title} helperText={errors.title?.message} />
                 )}
               />
 

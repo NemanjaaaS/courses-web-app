@@ -3,7 +3,6 @@ import {
   mockUsers,
   mockUserTests,
   mockTransactions,
-  mockCertificates,
   monthlyStats,
   testPassRates,
   topCourses,
@@ -12,8 +11,10 @@ import {
   type Test,
   type UserTest,
   type Transaction,
-  type Certificate,
+  type Request,
   type TestList,
+  type RequestTableFE,
+  mapRequestToTableFE,
 } from '../../lib/types';
 import { axiosBaseQuery } from './apiService';
 import type { UserData } from '../pages/auth/types/User';
@@ -32,7 +33,7 @@ const testsUrl = '/test';
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: axiosBaseQuery(),
-  tagTypes: ['Users', 'Courses', 'Tests', 'UserTests', 'Transactions', 'Certificates'],
+  tagTypes: ['Users', 'Courses', 'Tests', 'UserTests', 'Transactions', 'Certificates', 'Requests'],
   endpoints: (builder) => ({
     // ================= MOCK =================
 
@@ -106,6 +107,24 @@ export const api = createApi({
       invalidatesTags: ['Tests'],
     }),
 
+    getRequests: builder.query<RequestTableFE[], void>({
+      query: () => ({
+        url: `${coursesUrl}/requested-courses`,
+        method: 'GET',
+      }),
+      transformResponse: (response: Request[]): RequestTableFE[] => response.map((request) => mapRequestToTableFE(request)),
+      providesTags: ['Requests'],
+    }),
+
+    changeRequestStatus: builder.mutation<string, { requestId: number; requestStatus: 'PENDING' | 'APPROVED' | 'REJECTED' }>({
+      query: ({ requestId, requestStatus }) => ({
+        url: `${adminUrl}/change-course-status`,
+        method: 'POST',
+        data: { requestId, requestStatus },
+      }),
+      invalidatesTags: ['Requests'],
+    }),
+
     getUserTests: builder.query<UserTest[], void>({
       queryFn: async () => {
         await delay(300);
@@ -122,13 +141,13 @@ export const api = createApi({
       providesTags: ['Transactions'],
     }),
 
-    getCertificates: builder.query<Certificate[], void>({
-      queryFn: async () => {
-        await delay(300);
-        return { data: mockCertificates };
-      },
-      providesTags: ['Certificates'],
-    }),
+    // getCertificates: builder.query<Request[], void>({
+    //   queryFn: async () => {
+    //     await delay(300);
+    //     return { data: mockCertificates };
+    //   },
+    //   providesTags: ['Certificates'],
+    // }),
 
     // approveCertificate: builder.mutation<Certificate, string>({
     //   queryFn: async (certId) => {
@@ -201,9 +220,11 @@ export const {
   useDeleteTestMutation,
   useGetTestsQuery,
   useCreateTestMutation,
+  useGetRequestsQuery,
+  useChangeRequestStatusMutation,
   useGetUserTestsQuery,
   useGetTransactionsQuery,
-  useGetCertificatesQuery,
+  // useGetCertificatesQuery,
   // useApproveCertificateMutation,
   useGetDashboardStatsQuery,
   useLoginMutation,

@@ -1,32 +1,31 @@
 import { useState } from 'react';
+import { getRequestsColumns } from '../../helpers/AdminRequests.helper';
+import { useChangeRequestStatusMutation, useGetRequestsQuery } from '../../api/api';
+import { toast } from 'react-toastify';
 import { Box, Typography, Card, CardContent, Avatar, Grid, Tabs, Tab, Paper } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import { toast } from 'react-toastify';
-import { mockCertificates } from '../../../lib/types';
 import { DataGrid } from '@mui/x-data-grid';
-import { getRequestsColumns } from '../../helpers/AdminRequests.helper';
-
 export const AdminRequestsPage = () => {
-  const [certificates, setCertificates] = useState(mockCertificates);
   const [tabValue, setTabValue] = useState(0);
 
-  const approveCertificate = (id: number) => {
-    setCertificates(
-      certificates.map((cert) => {
-        if (Number(cert.id) === id) {
-          toast.success('Sertifikat je odobren');
-          return { ...cert, status: 'approved' as const, approvedAt: new Date().toISOString() };
-        }
-        return cert;
-      })
-    );
+  const { data: requests, isLoading: isLoadingRequests } = useGetRequestsQuery();
+  const [changeRequestStatus] = useChangeRequestStatusMutation();
+  console.log(requests);
+
+  const changeStatus = async (requestId: number, status: 'PENDING' | 'APPROVED' | 'REJECTED') => {
+    try {
+      await changeRequestStatus({ requestId: requestId, requestStatus: status }).unwrap();
+      toast.success('Status changed successfully');
+    } catch {
+      toast.error('Failed to change status');
+    }
   };
 
-  const pendingCertificates = certificates.filter((c) => c.status === 'pending');
-  const approvedCertificates = certificates.filter((c) => c.status === 'approved');
-  const columns = getRequestsColumns(approveCertificate);
+  const pendingRequests = requests?.filter((c) => c.status === 'PENDING') ?? [];
+  const approvedRequests = requests?.filter((c) => c.status === 'APPROVED') ?? [];
+  const columns = getRequestsColumns(changeStatus);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
       {/* Stats */}
@@ -39,10 +38,10 @@ export const AdminRequestsPage = () => {
               </Avatar>
               <Box>
                 <Typography variant="h5" fontWeight="bold">
-                  {pendingCertificates.length}
+                  {pendingRequests.length}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Čeka odobrenje
+                  Waiting for approval
                 </Typography>
               </Box>
             </CardContent>
@@ -56,10 +55,10 @@ export const AdminRequestsPage = () => {
               </Avatar>
               <Box>
                 <Typography variant="h5" fontWeight="bold">
-                  {approvedCertificates.length}
+                  {approvedRequests.length}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Odobreno
+                  Approved
                 </Typography>
               </Box>
             </CardContent>
@@ -73,10 +72,10 @@ export const AdminRequestsPage = () => {
               </Avatar>
               <Box>
                 <Typography variant="h5" fontWeight="bold">
-                  {certificates.length}
+                  {requests?.length}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Ukupno zahteva
+                  Total requests
                 </Typography>
               </Box>
             </CardContent>
@@ -91,14 +90,15 @@ export const AdminRequestsPage = () => {
           onChange={(_, newValue) => setTabValue(newValue)}
           sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}
         >
-          <Tab label={`Na čekanju (${pendingCertificates.length})`} sx={{ textTransform: 'none' }} />
-          <Tab label={`Odobreno (${approvedCertificates.length})`} sx={{ textTransform: 'none' }} />
+          <Tab label={`Pending (${pendingRequests.length})`} sx={{ textTransform: 'none' }} />
+          <Tab label={`Approved (${approvedRequests.length})`} sx={{ textTransform: 'none' }} />
         </Tabs>
 
         <Box sx={{ height: 'calc(100vh - 275px)', borderRadius: 3 }}>
           <DataGrid
-            rows={tabValue === 0 ? pendingCertificates : approvedCertificates}
+            rows={tabValue === 0 ? pendingRequests : approvedRequests}
             columns={columns}
+            loading={isLoadingRequests}
             pageSizeOptions={[5, 10, 25]}
             initialState={{
               pagination: { paginationModel: { pageSize: 10 } },
