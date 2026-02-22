@@ -17,21 +17,23 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { toast } from 'react-toastify';
 import { CourseCard } from '../../../components/ui/CourseCard';
-import { useGetCoursesQuery } from '../../api/api';
+import { useGetCoursesQuery, useRequestEnrollCourseMutation } from '../../api/api';
+import { mapCategory } from '../admin/helpers/helperMethods';
 
 export const UserCoursesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const { data: courses = [], isLoading: coursesLoading } = useGetCoursesQuery();
+  const [enrollCourse] = useRequestEnrollCourseMutation();
   const categories = [...new Set(courses.map((c) => c.category))];
 
-  const filteredCourses = courses.filter((course) => {
+  const filteredCourses = courses?.filter((course) => {
     const matchesSearch =
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchQuery.toLowerCase());
+      course?.title?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+      course?.shortDescription?.toLowerCase().includes(searchQuery?.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || course.category === categoryFilter;
-    const matchesDifficulty = difficultyFilter === 'all' || course.difficulty === difficultyFilter;
+    const matchesDifficulty = difficultyFilter === 'all' || course.level === difficultyFilter;
     return matchesSearch && matchesCategory && matchesDifficulty;
   });
 
@@ -41,8 +43,13 @@ export const UserCoursesPage = () => {
     setDifficultyFilter('all');
   };
 
-  const handleEnrollCourse = () => {
-    toast.success('Kurs je uspešno upisan');
+  const handleEnrollCourse = async (courseId: number) => {
+    try {
+      await enrollCourse(courseId);
+      toast.success('Request is sent successfully!');
+    } catch {
+      toast.error('Failed to enroll on course');
+    }
   };
 
   const isLoading = coursesLoading;
@@ -58,11 +65,11 @@ export const UserCoursesPage = () => {
   }
 
   return (
-    <Stack sx={{ p: 2, height: '100vh', pt: 2 }} spacing={2}>
+    <Stack sx={{ p: 2, height: '100vh', pt: 0 }} spacing={2}>
       {/* Filters */}
-      <Stack direction={'row'} spacing={2}>
+      <Stack direction={'row'} spacing={2} pt={1}>
         <TextField
-          placeholder="Pretražite kurseve..."
+          placeholder="Search courses..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           size="small"
@@ -78,30 +85,30 @@ export const UserCoursesPage = () => {
           }}
         />
         <FormControl size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Kategorija</InputLabel>
+          <InputLabel>Category</InputLabel>
           <Select value={categoryFilter} label="Kategorija" onChange={(e) => setCategoryFilter(e.target.value)}>
-            <MenuItem value="all">Sve kategorije</MenuItem>
+            <MenuItem value="all">All categories</MenuItem>
             {categories.map((cat) => (
               <MenuItem key={cat} value={cat}>
-                {cat}
+                {mapCategory(cat)}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
         <FormControl size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Težina</InputLabel>
+          <InputLabel>Difficulty</InputLabel>
           <Select value={difficultyFilter} label="Težina" onChange={(e) => setDifficultyFilter(e.target.value)}>
-            <MenuItem value="all">Sve težine</MenuItem>
-            <MenuItem value="beginner">Početnik</MenuItem>
-            <MenuItem value="intermediate">Srednji</MenuItem>
-            <MenuItem value="advanced">Napredni</MenuItem>
+            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="BEGINNER">Beginner</MenuItem>
+            <MenuItem value="INTERMEDIATE">Intermediate</MenuItem>
+            <MenuItem value="ADVANCED">Advanced</MenuItem>
           </Select>
         </FormControl>
       </Stack>
 
       {/* Results count */}
       <Typography variant="body2" color="text.secondary">
-        Pronađeno {filteredCourses.length} kurseva
+        Found {filteredCourses.length} courses
       </Typography>
 
       {/* Scrollable courses section */}
@@ -109,7 +116,7 @@ export const UserCoursesPage = () => {
         <Grid container spacing={2} py={2}>
           {filteredCourses.map((course) => (
             <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={course.id}>
-              <CourseCard course={course} onEnroll={() => handleEnrollCourse()} />
+              <CourseCard course={course} onEnroll={() => handleEnrollCourse(course.id)} />
             </Grid>
           ))}
         </Grid>
@@ -117,10 +124,10 @@ export const UserCoursesPage = () => {
         {filteredCourses.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="text.secondary" gutterBottom>
-              Nema kurseva koji odgovaraju vašoj pretrazi
+              No Curses that are matching your filters
             </Typography>
             <Button variant="outlined" onClick={resetFilters} sx={{ mt: 2 }}>
-              Resetuj filtere
+              Reset filters
             </Button>
           </Box>
         )}

@@ -1,26 +1,20 @@
 import { Box, Typography, Card, CardContent, Button, Chip, Grid, Avatar } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import DownloadIcon from '@mui/icons-material/Download';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import SchoolIcon from '@mui/icons-material/School';
-import { mockCertificates } from '../../../lib/types';
-import { toast } from 'react-toastify';
+
+import { useGetCertificatesQuery } from '../../api/api';
 
 export const UserCertificatesPage = () => {
-  // Mock: show user's certificates
-  const userCertificates = mockCertificates.filter((c) => c.status === 'approved');
-
-  const downloadCertificate = (courseName: string) => {
-    toast.success(`Sertifikat za "${courseName}" je preuzet`);
-  };
+  const { data: userCertificates } = useGetCertificatesQuery();
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, p: 2 }}>
       {/* Certificates Grid */}
-      {userCertificates.length > 0 ? (
+      {userCertificates && userCertificates?.length > 0 ? (
         <Grid container spacing={3}>
-          {userCertificates.map((cert) => (
-            <Grid size={{ xs: 12, sm: 6 }} key={cert.id} sx={{ borderRadius: 3 }}>
+          {userCertificates?.map((cert, index) => (
+            <Grid size={{ xs: 12, sm: 6 }} key={index} sx={{ borderRadius: 3 }}>
               <Card sx={{ borderRadius: 3 }}>
                 {/* Certificate Preview */}
                 <Box
@@ -33,7 +27,7 @@ export const UserCertificatesPage = () => {
                     textAlign: 'center',
                   }}
                 >
-                  <Chip label="Verifikovan" color="success" size="small" sx={{ position: 'absolute', top: 16, right: 16 }} />
+                  <Chip label="Verified" color="success" size="small" sx={{ position: 'absolute', top: 16, right: 16 }} />
 
                   <Avatar
                     sx={{
@@ -49,18 +43,19 @@ export const UserCertificatesPage = () => {
                   </Avatar>
 
                   <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 1 }}>
-                    Sertifikat o završetku
+                    Certificate of Completion
                   </Typography>
+
                   <Typography variant="h6" fontWeight="bold" sx={{ mt: 0.5 }}>
                     {cert.courseName}
                   </Typography>
 
                   <Box sx={{ mt: 2, pt: 2, borderTop: '1px dashed', borderColor: 'divider' }}>
                     <Typography variant="body2" color="text.secondary">
-                      Dodeljeno
+                      Awarded to
                     </Typography>
                     <Typography variant="subtitle1" fontWeight="medium">
-                      {cert.userName}
+                      {cert.userFullName}
                     </Typography>
                   </Box>
                 </Box>
@@ -70,23 +65,14 @@ export const UserCertificatesPage = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                     <CalendarTodayIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
                     <Typography variant="body2" color="text.secondary">
-                      Izdato:{' '}
-                      {new Date(cert.issuedAt).toLocaleDateString('sr-RS', {
+                      Issued on:{' '}
+                      {new Date(cert.completionDate).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
                       })}
                     </Typography>
                   </Box>
-
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    startIcon={<DownloadIcon />}
-                    onClick={() => downloadCertificate(cert.courseName)}
-                  >
-                    Preuzmi sertifikat
-                  </Button>
                 </CardContent>
               </Card>
             </Grid>
@@ -105,14 +91,17 @@ export const UserCertificatesPage = () => {
           >
             <SchoolIcon sx={{ fontSize: 32, color: 'text.secondary' }} />
           </Avatar>
+
           <Typography variant="h6" gutterBottom>
-            Nemate sertifikate
+            You don't have any certificates yet
           </Typography>
+
           <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400, mx: 'auto', mb: 3 }}>
-            Položite testove da biste zaradili sertifikate koji potvrđuju vaše znanje.
+            Enroll in a course and pass its test to earn a certificate.
           </Typography>
-          <Button variant="contained" href="/my-tests">
-            Pogledaj testove
+
+          <Button variant="contained" href="/app/user/user-courses">
+            Browse Courses
           </Button>
         </Box>
       )}

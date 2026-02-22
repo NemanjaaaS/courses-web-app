@@ -113,7 +113,7 @@ export const AdminTestsPage = () => {
           id: `q${Date.now()}_${index}`,
           text: q.text,
           options: q.options,
-          correctAnswer: q.correctAnswer,
+          correctAnswer: q.options[q.correctAnswer],
         })),
       }).unwrap();
       toast.success('Test created successfully!');

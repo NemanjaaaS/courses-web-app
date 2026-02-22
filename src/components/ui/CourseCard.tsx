@@ -27,7 +27,7 @@ const difficultyLabels = {
   ADVANCED: 'Advanced',
 };
 
-export function CourseCard({ course, onEnroll, enrolled }: CourseCardProps) {
+export function CourseCard({ course, onEnroll }: CourseCardProps) {
   const [deleteCourse] = useDeleteCourseMutation();
   const isAdmin = useAppSelector(selectUser).role === 'ADMIN';
   const handleDeleteCouse = async (courseId: number) => {
@@ -123,8 +123,8 @@ export function CourseCard({ course, onEnroll, enrolled }: CourseCardProps) {
             </Typography>
           </Typography>
           {!isAdmin ? (
-            <Button variant={enrolled ? 'outlined' : 'contained'} size="small" onClick={onEnroll}>
-              {enrolled ? 'Enrolled' : 'Enroll Now'}
+            <Button variant={course.courseRequested ? 'outlined' : 'contained'} size="small" onClick={onEnroll}>
+              {course.courseRequested ? 'Enrolled' : 'Enroll Now'}
             </Button>
           ) : (
             <IconButton onClick={() => handleDeleteCouse(Number(course.id))}>

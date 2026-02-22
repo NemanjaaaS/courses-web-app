@@ -8,23 +8,27 @@ import {
   type User,
   type Course,
   type Test,
-  type UserTest,
+  type UserTestResults,
   type Transaction,
   type Request,
   type TestList,
   type RequestTableFE,
   mapRequestToTableFE,
   mapUserTestBE2FE,
-  type UserTestBE,
+  type UserResultBE,
   type UserTable,
   type UserTableBE,
   mapUserTableBE2FE,
+  type UserTest,
+  type Question,
+  type Answer,
+  type CreateTestDTO,
+  type Cerfiticates,
 } from '../../lib/types';
 import { axiosBaseQuery } from './apiService';
 import type { UserData } from '../pages/auth/types/User';
 import type { RegisterFormData } from '../pages/auth/RegisterPage';
 import type { NewCourse } from '../pages/admin/AdminCoursesPage';
-import type { TestFormData } from '../pages/admin/AdminTestsPage';
 
 // Simulate API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -94,15 +98,48 @@ export const api = createApi({
       providesTags: ['Tests'],
     }),
 
-    getResults: builder.query<UserTest[], void>({
+    //GET user tests
+    getUserTests: builder.query<UserTest[], void>({
       query: () => ({
-        url: `${testsUrl}/admin-tests-results`,
+        url: `${testsUrl}/my-tests`,
+        method: 'GET',
       }),
-      transformResponse: (response: UserTestBE[]): UserTest[] => response.map((result) => mapUserTestBE2FE(result)),
+
       providesTags: ['Tests'],
     }),
 
-    createTest: builder.mutation<Test, TestFormData>({
+    getTestQuestions: builder.query<Question[], number>({
+      query: (testId) => ({
+        url: `${testsUrl}/questions/${testId}`,
+        method: 'GET',
+      }),
+      providesTags: ['Tests'],
+    }),
+    submitTest: builder.mutation<{ percentage: number; passed: boolean }, { testId: number; answers: Answer[] }>({
+      query: ({ testId, answers }) => ({
+        url: `${testsUrl}/submit`,
+        method: 'POST',
+        data: { testId: testId, answers: answers },
+      }),
+      invalidatesTags: ['Tests'],
+    }),
+
+    getResults: builder.query<UserTestResults[], void>({
+      query: () => ({
+        url: `${testsUrl}/admin-tests-results`,
+      }),
+      transformResponse: (response: UserResultBE[]): UserTestResults[] => response.map((result) => mapUserTestBE2FE(result)),
+      providesTags: ['Tests'],
+    }),
+
+    getCertificates: builder.query<Cerfiticates[], void>({
+      query: () => ({
+        url: `${coursesUrl}/certificates`,
+        method: 'GET',
+      }),
+    }),
+
+    createTest: builder.mutation<Test, CreateTestDTO>({
       query: (test) => ({
         url: `${adminUrl}/create-test`,
         method: 'POST',
@@ -128,6 +165,14 @@ export const api = createApi({
       providesTags: ['Requests'],
     }),
 
+    requestEnrollCourse: builder.mutation<string, number>({
+      query: (courseId) => ({
+        url: `${coursesUrl}/request-course/${courseId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Courses'],
+    }),
+
     changeRequestStatus: builder.mutation<string, { requestId: number; requestStatus: 'PENDING' | 'APPROVED' | 'REJECTED' }>({
       query: ({ requestId, requestStatus }) => ({
         url: `${adminUrl}/change-course-status`,
@@ -136,14 +181,6 @@ export const api = createApi({
       }),
       invalidatesTags: ['Requests'],
     }),
-
-    // getUserTests: builder.query<UserTest[], void>({
-    //   queryFn: async () => {
-    //     await delay(300);
-    //     return { data: mockUserTests };
-    //   },
-    //   providesTags: ['UserTests'],
-    // }),
 
     getTransactions: builder.query<Transaction[], void>({
       queryFn: async () => {
@@ -243,9 +280,12 @@ export const {
   useCreateTestMutation,
   useGetRequestsQuery,
   useChangeRequestStatusMutation,
-  // useGetUserTestsQuery,
+  useGetUserTestsQuery,
   useGetResultsQuery,
   useGetTransactionsQuery,
+  useLazyGetTestQuestionsQuery,
+  useSubmitTestMutation,
+  useGetCertificatesQuery,
   // useGetCertificatesQuery,
   // useApproveCertificateMutation,
   useGetDashboardStatsQuery,
@@ -253,4 +293,5 @@ export const {
   useRegisterMutation,
   useGetUserInfoMutation,
   useGetAllUsersQuery,
+  useRequestEnrollCourseMutation,
 } = api;

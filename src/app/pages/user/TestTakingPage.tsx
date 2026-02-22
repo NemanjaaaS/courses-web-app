@@ -1,85 +1,124 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
+  CircularProgress,
   Typography,
+  Avatar,
   Card,
   CardContent,
-  Button,
   LinearProgress,
-  Radio,
+  Button,
+  Container,
+  FormControl,
   RadioGroup,
   FormControlLabel,
-  FormControl,
-  Container,
-  Avatar,
+  Radio,
 } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useLazyGetTestQuestionsQuery, useSubmitTestMutation } from '../../api/api';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { mockCourses, mockTests } from '../../../lib/types';
-import { toast } from 'react-toastify';
+type QuestionAnswerDTO = {
+  questionId: number;
+  answer: string;
+};
 
 export const TestTakingPage = () => {
   const { id: testId } = useParams();
   const navigate = useNavigate();
-  console.log(testId);
-  const test = mockTests.find((t) => t.id === testId);
+
+  const [fetchQuestions, { data: questions = [], isError, isFetching }] = useLazyGetTestQuestionsQuery();
+  const [submitTest, { isLoading: isSubmitting }] = useSubmitTestMutation();
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<{ [key: string]: number }>({});
+  const [answers, setAnswers] = useState<QuestionAnswerDTO[]>([]);
   const [isFinished, setIsFinished] = useState(false);
-  const [score, setScore] = useState(0);
+  const [result, setResult] = useState<{ percentage: number; passed: boolean } | null>(null);
 
-  if (!test) {
+  useEffect(() => {
+    if (testId) {
+      fetchQuestions(Number(testId));
+    }
+  }, [testId]);
+
+  if (isFetching) {
     return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography color="text.secondary">Test nije pronađen</Typography>
+      <Box height="100%" display="flex" justifyContent="center" alignItems="center">
+        <CircularProgress />
       </Box>
     );
   }
 
-  const courseName = mockCourses.find((c) => c.id === test.courseId)?.title || 'Nepoznat kurs';
-  const question = test.questions[currentQuestion];
-  const progress = ((currentQuestion + 1) / test.questions.length) * 100;
+  if (isError || !questions.length) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+        <Typography color="text.secondary">Test not found</Typography>
+      </Box>
+    );
+  }
+
+  const question = questions[currentQuestion];
+  const progress = ((currentQuestion + 1) / questions.length) * 100;
+
+  const getSelectedAnswer = (questionId: number) => {
+    return answers.find((a) => a.questionId === questionId)?.answer || '';
+  };
 
   const handleAnswer = (value: string) => {
-    setAnswers({ ...answers, [question.id]: parseInt(value) });
+    setAnswers((prev) => {
+      const existing = prev.find((a) => a.questionId === question.id);
+
+      if (existing) {
+        return prev.map((a) => (a.questionId === question.id ? { ...a, answer: value } : a));
+      }
+
+      return [...prev, { questionId: question.id, answer: value }];
+    });
   };
 
   const nextQuestion = () => {
-    if (currentQuestion < test.questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion((prev) => prev + 1);
     }
   };
 
   const prevQuestion = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+      setCurrentQuestion((prev) => prev - 1);
     }
   };
 
-  const finishTest = () => {
-    const correctAnswers = test.questions.filter((q) => answers[q.id] === q.correctAnswer).length;
-    const calculatedScore = Math.round((correctAnswers / test.questions.length) * 100);
-    setScore(calculatedScore);
-    setIsFinished(true);
+  const finishTest = async () => {
+    try {
+      const response = await submitTest({
+        testId: Number(testId),
+        answers,
+      }).unwrap();
 
-    if (calculatedScore >= test.passingScore) {
-      toast.success('Čestitamo! Položili ste test!');
-    } else {
-      toast.error('Nažalost, niste položili test.');
+      setResult(response);
+      setIsFinished(true);
+
+      if (response.passed) {
+        toast.success('Congratulations! You passed the test!');
+      } else {
+        toast.error('You did not pass. Try again.');
+      }
+    } catch {
+      toast.error('Something went wrong.');
     }
   };
 
-  if (isFinished) {
-    const passed = score >= test.passingScore;
+  // RESULT SCREEN (ostaje isto)
+  if (isFinished && result) {
+    const passed = result.passed;
 
     return (
-      <Box sx={{ minHeight: 'calc(100vh - 190px)', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 3 }}>
-        <Box sx={{ textAlign: 'center', maxWidth: 500 }}>
+      <Box minHeight="calc(100vh - 190px)" display="flex" alignItems="center" justifyContent="center" p={3}>
+        <Box textAlign="center" maxWidth={500}>
           <Avatar
             sx={{
               width: 96,
@@ -94,97 +133,67 @@ export const TestTakingPage = () => {
           </Avatar>
 
           <Typography variant="h4" fontWeight="bold" gutterBottom>
-            {passed ? 'Čestitamo!' : 'Pokušajte ponovo'}
+            {passed ? 'Congratulations!' : 'Try Again'}
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-            {passed ? 'Uspešno ste položili test i zaradili sertifikat!' : 'Nažalost, niste dostigli prolazni prag.'}
+
+          <Typography color="text.secondary" mb={4}>
+            {passed ? 'You successfully passed the test!' : 'You did not reach the passing score.'}
           </Typography>
 
           <Card sx={{ mb: 4 }}>
             <CardContent>
               <Typography variant="h2" fontWeight="bold" color={passed ? 'success.main' : 'error.main'}>
-                {score}%
+                {result.percentage}%
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Vaš rezultat
+
+              <Typography color="text.secondary" mb={2}>
+                Your Score
               </Typography>
+
               <LinearProgress
                 variant="determinate"
-                value={score}
+                value={result.percentage}
                 color={passed ? 'success' : 'error'}
-                sx={{ height: 12, borderRadius: 1, mb: 1 }}
+                sx={{ height: 12, borderRadius: 1 }}
               />
-              <Typography variant="body2" color="text.secondary">
-                Prolazni prag: {test.passingScore}%
-              </Typography>
             </CardContent>
           </Card>
 
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-            <Button variant="outlined" onClick={() => navigate('/my-tests')}>
-              Nazad na testove
-            </Button>
-            {passed && (
-              <Button variant="contained" onClick={() => navigate('/certificates')}>
-                Pogledaj sertifikate
-              </Button>
-            )}
-          </Box>
+          <Button variant="outlined" onClick={() => navigate('/app/user/my-tests')}>
+            Back to Tests
+          </Button>
         </Box>
       </Box>
     );
   }
 
+  // TEST SCREEN
   return (
     <Box>
-      {/* Header */}
-      {/* <AppBar position="sticky" color="default" elevation={1}> */}
-      <Box sx={{ position: 'absolute', top: 0, zIndex: 99999, height: '100%', pt: 1.3, pl: 7 }}>
-        <Box>
-          <Typography variant="h6" fontWeight="medium">
-            {test.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {courseName}
-          </Typography>
-        </Box>
-      </Box>
-      {/* </AppBar> */}
       <LinearProgress variant="determinate" value={progress} />
-      {/* Question */}
+
       <Container maxWidth="md" sx={{ py: 3 }}>
         <Card sx={{ mb: 2, borderRadius: 3 }}>
           <CardContent>
-            <Typography variant="h5" fontWeight="medium" sx={{ mb: 4 }}>
+            <Typography variant="h5" mb={4}>
               {question.text}
             </Typography>
 
-            <FormControl component="fieldset" fullWidth>
-              <RadioGroup value={answers[question.id]?.toString() || ''} onChange={(e) => handleAnswer(e.target.value)}>
-                {question.options.map((option, index) => (
+            <FormControl fullWidth>
+              <RadioGroup value={getSelectedAnswer(question.id)} onChange={(e) => handleAnswer(e.target.value)}>
+                {question.options.map((option: string, index: number) => (
                   <Card
                     key={index}
                     variant="outlined"
                     sx={{
                       mb: 1.5,
                       cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      borderColor: answers[question.id] === index ? 'primary.main' : 'divider',
-                      bgcolor: answers[question.id] === index ? 'primary.light' : 'transparent',
-                      '&:hover': {
-                        borderColor: 'primary.main',
-                        bgcolor: 'action.hover',
-                      },
+                      borderColor: getSelectedAnswer(question.id) === option ? 'primary.main' : 'divider',
                     }}
-                    onClick={() => handleAnswer(index.toString())}
+                    onClick={() => handleAnswer(option)}
                   >
-                    <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                      <FormControlLabel
-                        value={index.toString()}
-                        control={<Radio />}
-                        label={option}
-                        sx={{ width: '100%', m: 0 }}
-                      />
+                    <CardContent>
+                      <FormControlLabel value={option} control={<Radio />} label={option} />
                     </CardContent>
                   </Card>
                 ))}
@@ -193,19 +202,18 @@ export const TestTakingPage = () => {
           </CardContent>
         </Card>
 
-        {/* Navigation */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Box display="flex" justifyContent="space-between">
           <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={prevQuestion} disabled={currentQuestion === 0}>
-            Prethodno
+            Previous
           </Button>
 
-          {currentQuestion === test.questions.length - 1 ? (
-            <Button variant="contained" endIcon={<CheckCircleIcon />} onClick={finishTest}>
-              Završi test
+          {currentQuestion === questions.length - 1 ? (
+            <Button variant="contained" endIcon={<CheckCircleIcon />} onClick={finishTest} disabled={isSubmitting}>
+              Submit Test
             </Button>
           ) : (
             <Button variant="contained" endIcon={<ArrowForwardIcon />} onClick={nextQuestion}>
-              Sledeće
+              Next
             </Button>
           )}
         </Box>

@@ -1,7 +1,5 @@
-import { Box, Typography, Grid, Card, CardContent, Avatar, Chip } from '@mui/material';
-import DescriptionIcon from '@mui/icons-material/Description';
+import { Box, Typography, Grid, Card, CardContent } from '@mui/material';
 
-import { mockUserTests } from '../../../lib/types';
 import { StatTrendCard } from '../../../components/widgets/StatTrendCardWidget';
 import PeopleIcon from '@mui/icons-material/People';
 import { ProgressCardWidget } from '../../../components/widgets/ProgressCardWidget';
@@ -77,7 +75,7 @@ export const UserDashboardPage = () => {
         </Typography>
         <Card sx={{ borderRadius: 3 }}>
           <CardContent>
-            {mockUserTests.slice(0, 3).map((test) => (
+            {/* {mockUserTests.slice(0, 3).map((test) => (
               <Box
                 key={test.id}
                 sx={{
@@ -113,7 +111,7 @@ export const UserDashboardPage = () => {
                   size="small"
                 />
               </Box>
-            ))}
+            ))} */}
           </CardContent>
         </Card>
       </Box>
