@@ -1,4 +1,3 @@
-import { toast } from 'react-toastify';
 import axios from 'axios';
 import type { NavigateFunction } from 'react-router-dom';
 import { TOKEN_STORAGE_KEY } from '../pages/auth/user/userSlice';
@@ -36,26 +35,37 @@ export const unsetBearerToken = async () => {
 };
 
 // Default request interceptor
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem(TOKEN_STORAGE_KEY);
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const status = error?.response?.status;
+  async (error) => {
+    const originalRequest = error.config;
 
-    if (status === 401) {
-      toast.error('Unauthorized');
-      navigate?.('/login');
+    if (error?.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refresh_token');
+
+        const res = await axios.post(`${apiUrl}/auth/refresh`, {
+          refreshToken,
+        });
+
+        const newToken = res.data.authenticationToken;
+
+        localStorage.setItem(TOKEN_STORAGE_KEY, newToken);
+        await setBearerToken(newToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+        return axiosInstance(originalRequest);
+      } catch {
+        unsetBearerToken();
+        localStorage.removeItem(TOKEN_STORAGE_KEY);
+        localStorage.removeItem('refresh_token');
+        navigate?.('/login');
+      }
     }
 
-    // console.error(i18next.t('GENERAL.ERROR.API_ERROR'));
     return Promise.reject(error);
   }
 );

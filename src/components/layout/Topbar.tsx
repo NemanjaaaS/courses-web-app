@@ -1,23 +1,6 @@
-import {
-  IconButton,
-  AppBar,
-  Avatar,
-  Box,
-  Divider,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Typography,
-  Stack,
-} from '@mui/material';
+import { IconButton, AppBar, Avatar, Box, ListItemIcon, Menu, MenuItem, Toolbar, Typography, Stack } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  Menu as MenuIcon,
-  KeyboardArrowDown as ArrowDownIcon,
-  Settings as SettingsIcon,
-  Logout as LogoutIcon,
-} from '@mui/icons-material';
+import { Menu as MenuIcon, KeyboardArrowDown as ArrowDownIcon, Logout as LogoutIcon } from '@mui/icons-material';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { logout, selectUser } from '../../app/pages/auth/user/userSlice';
@@ -69,7 +52,9 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
             <Typography fontSize={16} fontWeight={600}>
               Users
             </Typography>
-            <Typography color="text.secondary">Manage users, roles, and account status</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Manage users, roles, and account status
+            </Typography>
           </Stack>
         );
 
@@ -220,13 +205,6 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          <MenuItem onClick={handleMenuClose}>
-            <ListItemIcon>
-              <SettingsIcon fontSize="small" />
-            </ListItemIcon>
-            Settings
-          </MenuItem>
-          <Divider />
           <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
             <ListItemIcon>
               <LogoutIcon fontSize="small" color="error" />

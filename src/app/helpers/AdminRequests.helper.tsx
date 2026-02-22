@@ -1,7 +1,7 @@
 import { Box, Avatar, Typography, Chip, Stack, IconButton, Tooltip } from '@mui/material';
 import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import IconifyIcon from '../../components/base/IconifyIcon';
+// import IconifyIcon from '../../components/base/IconifyIcon';
 
 export const getRequestsColumns = (
   handleAcceptRequest: (requestId: number, status: 'PENDING' | 'APPROVED' | 'REJECTED') => void
@@ -67,6 +67,7 @@ export const getRequestsColumns = (
             <Box>
               <IconButton
                 onClick={() => handleAcceptRequest(params.row.id, 'APPROVED')}
+                color="success"
                 disabled={params.row.status === 'APPROVED'}
                 sx={{ border: 1, borderRadius: 3, padding: 0.7 }}
               >
@@ -74,17 +75,18 @@ export const getRequestsColumns = (
               </IconButton>
             </Box>
           </Tooltip>
-          <Tooltip title="Reject" arrow>
+          {/* <Tooltip title="Reject" arrow>
             <Box>
               <IconButton
                 onClick={() => handleAcceptRequest(params.row.id, 'APPROVED')}
+                color="error"
                 disabled={params.row.status === 'APPROVED'}
                 sx={{ border: 1, borderRadius: 3, padding: 0.7 }}
               >
                 <IconifyIcon icon={'mdi:close'} />
               </IconButton>
             </Box>
-          </Tooltip>
+          </Tooltip> */}
         </Stack>
       ),
     },

@@ -36,6 +36,7 @@ export const loginThunk = createAsyncThunk<
     // set token to axios interceptor + localStorage
     await setBearerToken(result.authenticationToken);
     localStorage.setItem(TOKEN_STORAGE_KEY, result.authenticationToken);
+    localStorage.setItem('refresh_token', result.refreshToken);
 
     // Fetch user details after setting token
     const userDetails = await dispatch(api.endpoints.getUserInfo.initiate()).unwrap();
@@ -56,15 +57,65 @@ export const loginThunk = createAsyncThunk<
   }
 });
 
+export const refreshTokenThunk = createAsyncThunk<string, void, { rejectValue: string }>(
+  'auth/refreshToken',
+  async (_, { rejectWithValue }) => {
+    try {
+      const refreshToken = localStorage.getItem('refresh_token');
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!response.ok) throw new Error();
+
+      const data = await response.json();
+
+      localStorage.setItem(TOKEN_STORAGE_KEY, data.authenticationToken);
+
+      await setBearerToken(data.authenticationToken);
+
+      return data.authenticationToken;
+    } catch {
+      return rejectWithValue('Refresh failed');
+    }
+  }
+);
+
 export const initializeAuth = createAsyncThunk<{ user: UserData; token: string } | null, void, { rejectValue: string }>(
   'auth/initializeAuth',
   async (_, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
 
-    if (!token || !isTokenValid(token)) {
-      await unsetBearerToken();
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
-      return null;
+    if (!token) return null;
+
+    if (!isTokenValid(token)) {
+      try {
+        const newToken = await dispatch(refreshTokenThunk()).unwrap();
+
+        const userDetails = await dispatch(api.endpoints.getUserInfo.initiate()).unwrap();
+
+        dispatch(
+          login({
+            user: userDetails,
+            token: newToken,
+          })
+        );
+
+        return {
+          user: userDetails,
+          token: newToken,
+        };
+      } catch {
+        await unsetBearerToken();
+        localStorage.removeItem(TOKEN_STORAGE_KEY);
+        localStorage.removeItem('refresh_token');
+        return null;
+      }
     }
 
     await setBearerToken(token);
