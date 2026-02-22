@@ -1,15 +1,15 @@
 import { Box, Paper, Typography, Skeleton, Stack } from '@mui/material';
 import { TrendingUp as TrendingUpIcon, AccessTime as ClockIcon, CreditCard as CreditCardIcon } from '@mui/icons-material';
-import { useGetTransactionsQuery } from '../../api/api';
 import { DataGrid } from '@mui/x-data-grid';
 import { getTransactionsColumns } from '../../helpers/AdminTransactions.helper';
+import { useGetRequestsQuery } from '../../api/api';
 
 export const AdminTransactionsPage = () => {
-  const { data: transactions = [], isLoading } = useGetTransactionsQuery();
+  const { data: transactions, isLoading } = useGetRequestsQuery();
 
-  const totalRevenue = transactions.reduce((acc, t) => (t.status === 'completed' ? acc + t.amount : acc), 0);
-  const pendingRevenue = transactions.reduce((acc, t) => (t.status === 'pending' ? acc + t.amount : acc), 0);
-  const completedCount = transactions.filter((t) => t.status === 'completed').length;
+  const totalRevenue = transactions?.reduce((acc, t) => (t.status === 'APPROVED' ? acc + t.price : acc), 0);
+  const pendingRevenue = transactions?.reduce((acc, t) => (t.status === 'PENDING' ? acc + t.price : acc), 0);
+  const completedCount = transactions?.filter((t) => t.status === 'APPROVED').length;
 
   const columns = getTransactionsColumns();
 
@@ -28,13 +28,13 @@ export const AdminTransactionsPage = () => {
             </Box>
             <Box>
               <Typography variant="h5" fontWeight={700}>
-                {totalRevenue.toLocaleString('sr-RS')}{' '}
+                {totalRevenue?.toLocaleString('sr-RS')}{' '}
                 <Typography component="span" variant="body2" color="text.secondary">
                   RSD
                 </Typography>
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Ukupni prihod
+                Total revenue
               </Typography>
             </Box>
           </Stack>
@@ -46,13 +46,13 @@ export const AdminTransactionsPage = () => {
             </Box>
             <Box>
               <Typography variant="h5" fontWeight={700}>
-                {pendingRevenue.toLocaleString('sr-RS')}{' '}
+                {pendingRevenue?.toLocaleString('sr-RS')}{' '}
                 <Typography component="span" variant="body2" color="text.secondary">
                   RSD
                 </Typography>
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Na čekanju
+                Pending
               </Typography>
             </Box>
           </Stack>
@@ -67,7 +67,7 @@ export const AdminTransactionsPage = () => {
                 {completedCount}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Završenih transakcija
+                Finished transactions
               </Typography>
             </Box>
           </Stack>
