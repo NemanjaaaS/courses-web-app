@@ -62,7 +62,7 @@ export const LoginPage = () => {
         }
       }
     } catch {
-      toast.error('Faild to login');
+      toast.error('Failed to login');
     }
   };
 

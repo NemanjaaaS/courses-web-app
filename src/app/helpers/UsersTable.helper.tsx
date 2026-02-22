@@ -1,78 +1,69 @@
-import { MoreVert } from '@mui/icons-material';
-import { Chip, IconButton } from '@mui/material';
+import { Chip, Box, Typography } from '@mui/material';
 import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 
-export const getUserColumns = (handleMenuOpen: (event: React.MouseEvent<HTMLElement>, userId: string) => void) => {
+export const getUserColumns = () => {
   const columns: GridColDef[] = [
     {
-      field: 'name',
+      field: 'fullName',
       headerName: 'User',
-      minWidth: 160,
-      flex: 1,
-    },
-    {
-      field: 'email',
-      headerName: 'Email',
       minWidth: 200,
       flex: 1,
     },
+
     {
-      field: 'role',
-      headerName: 'Role',
-      minWidth: 120,
+      field: 'email',
+      headerName: 'Email',
+      minWidth: 220,
       flex: 1,
-      renderCell: (params: GridRenderCellParams) => (
-        <Chip
-          label={params.value === 'admin' ? 'Admin' : 'User'}
-          size="small"
-          color={params.value === 'admin' ? 'primary' : 'default'}
-        />
-      ),
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      minWidth: 120,
-      flex: 1,
-      renderCell: (params: GridRenderCellParams) => (
-        <Chip
-          label={params.value === 'active' ? 'Active' : 'Inactive'}
-          size="small"
-          color={params.value === 'active' ? 'success' : 'error'}
-          variant="outlined"
-        />
-      ),
-    },
-    {
-      field: 'joinedAt',
-      headerName: 'Joined',
-      minWidth: 130,
-      flex: 1,
-      valueFormatter: (value: string) => new Date(value).toLocaleDateString('en-US'),
     },
     {
       field: 'enrolledCourses',
-      headerName: 'Courses',
-      minWidth: 120,
-    },
-    {
-      field: 'completedTests',
-      headerName: 'Completed Tests',
-      minWidth: 150,
+      headerName: 'Enrolled Courses',
+      minWidth: 160,
       flex: 1,
-    },
-    {
-      field: 'actions',
-      headerName: '',
-      sortable: false,
-      pinnable: true,
-      align: 'right',
       renderCell: (params: GridRenderCellParams) => (
-        <IconButton size="small" onClick={(event) => handleMenuOpen(event, params.row.id)}>
-          <MoreVert />
-        </IconButton>
+        <Box sx={{ height: '100%', alignItems: 'center', display: 'flex' }}>
+          <Typography>{params.value}</Typography>
+        </Box>
       ),
     },
+    {
+      field: 'completedCourses',
+      headerName: 'Completed Courses',
+      minWidth: 180,
+      flex: 1,
+      renderCell: (params: GridRenderCellParams) => (
+        <Box sx={{ height: '100%', alignItems: 'center', display: 'flex' }}>
+          <Typography>{params.value}</Typography>
+        </Box>
+      ),
+    },
+    {
+      field: 'passedTests',
+      headerName: 'Passed Tests',
+      minWidth: 150,
+      flex: 1,
+      renderCell: (params: GridRenderCellParams) => <Chip label={params.value} size="small" color="success" />,
+    },
+    {
+      field: 'failedTests',
+      headerName: 'Failed Tests',
+      minWidth: 150,
+      flex: 1,
+      renderCell: (params: GridRenderCellParams) => <Chip label={params.value} size="small" color="error" />,
+    },
+    // {
+    //   field: 'actions',
+    //   headerName: '',
+    //   sortable: false,
+    //   align: 'right',
+    //   minWidth: 80,
+    //   renderCell: (params: GridRenderCellParams) => (
+    //     <IconButton size="small" onClick={(event) => handleMenuOpen(event, params.row.id)}>
+    //       <MoreVert />
+    //     </IconButton>
+    //   ),
+    // },
   ];
 
   return columns;

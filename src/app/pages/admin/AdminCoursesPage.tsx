@@ -99,9 +99,9 @@ export const AdminCoursesPage = () => {
     try {
       await createCourse(data).unwrap();
       handleCloseDialog();
-      toast.success('Kurs je uspešno kreiran');
+      toast.success('Course created successfully!');
     } catch {
-      toast.error('Faild to create course!');
+      toast.error('Failed to create course!');
     }
   };
 

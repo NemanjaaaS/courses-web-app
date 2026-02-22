@@ -1,14 +1,14 @@
 import { Box, Paper, Typography, Skeleton, Stack } from '@mui/material';
 import { TrendingUp as TrendingUpIcon, TrendingDown as TrendingDownIcon } from '@mui/icons-material';
-import { useGetUserTestsQuery } from '../../api/api';
+import { useGetResultsQuery } from '../../api/api';
 import { DataGrid } from '@mui/x-data-grid';
 import { columns } from '../../helpers/AdminResults.helper';
 
 export const AdminResultsPage = () => {
-  const { data: userTests = [], isLoading } = useGetUserTestsQuery();
+  const { data: results = [], isLoading } = useGetResultsQuery();
 
-  const passedCount = userTests.filter((r) => r.passed).length;
-  const failedCount = userTests.filter((r) => !r.passed && r.status === 'completed').length;
+  const passedCount = results.filter((r) => r.passed).length;
+  const failedCount = results.filter((r) => !r.passed && r.status === 'completed').length;
   const passRate = passedCount + failedCount > 0 ? ((passedCount / (passedCount + failedCount)) * 100).toFixed(1) : '0';
 
   if (isLoading) {
@@ -33,11 +33,12 @@ export const AdminResultsPage = () => {
                 {passedCount}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Položeno
+                Passed
               </Typography>
             </Box>
           </Stack>
         </Paper>
+
         <Paper sx={{ p: 3, borderRadius: 3 }}>
           <Stack direction="row" spacing={2} alignItems="center">
             <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: '#ef444415' }}>
@@ -48,11 +49,12 @@ export const AdminResultsPage = () => {
                 {failedCount}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Nije položeno
+                Failed
               </Typography>
             </Box>
           </Stack>
         </Paper>
+
         <Paper sx={{ p: 3, borderRadius: 3 }}>
           <Stack direction="row" spacing={2} alignItems="center">
             <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: '#4338ca15' }}>
@@ -63,7 +65,7 @@ export const AdminResultsPage = () => {
                 {passRate}%
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Prolaznost
+                Pass Rate
               </Typography>
             </Box>
           </Stack>
@@ -74,7 +76,7 @@ export const AdminResultsPage = () => {
       <Paper sx={{ height: 'calc(100vh - 216px)', borderRadius: 3 }}>
         <DataGrid
           showToolbar
-          rows={userTests}
+          rows={results}
           columns={columns}
           loading={isLoading}
           disableRowSelectionOnClick

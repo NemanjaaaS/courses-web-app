@@ -61,16 +61,66 @@ export interface Question {
   correctAnswer: number;
 }
 
-export interface UserTest {
-  id: string;
-  userId: string;
-  testId: string;
-  courseName: string;
-  score: number;
+export interface UserTestBE {
+  id: number;
+  title: string;
+  passingScorePercentage: number;
+  attended: boolean;
   passed: boolean;
-  completedAt: string;
+  userScore: number;
+  user: UserData;
+}
+
+export interface UserTest {
+  id: number;
+  userName: string;
+  testName: string;
+  score: number;
+  userScore: number;
+  passed: boolean;
   status: 'in-progress' | 'completed';
 }
+
+export const mapUserTestBE2FE = (backend: UserTestBE): UserTest => ({
+  id: backend.id,
+  userName: backend.user.fullName,
+  testName: backend.title,
+  score: backend.passingScorePercentage,
+  userScore: backend.userScore,
+  passed: backend.passed,
+  status: backend.passed ? 'completed' : 'in-progress',
+});
+
+export interface UserTableBE {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  enrolledCourses: number;
+  completedCourses: number;
+  passedTests: number;
+  failedTests: number;
+}
+
+export interface UserTable {
+  id: number;
+  fullName: string;
+  email: string;
+  enrolledCourses: number;
+  completedCourses: number;
+  passedTests: number;
+  failedTests: number;
+}
+
+export const mapUserTableBE2FE = (backend: UserTableBE): UserTable => ({
+  id: backend.id,
+  fullName: backend.firstName + ' ' + backend.lastName,
+  email: backend.email,
+  enrolledCourses: backend.enrolledCourses,
+  completedCourses: backend.completedCourses,
+  passedTests: backend.passedTests,
+  failedTests: backend.failedTests,
+});
 
 export interface Transaction {
   id: string;
@@ -450,70 +500,6 @@ export const mockTests: Test[] = [
         correctAnswer: 1,
       },
     ],
-  },
-];
-
-// Mock User Tests
-export const mockUserTests: UserTest[] = [
-  {
-    id: '1',
-    userId: '1',
-    testId: '1',
-    courseName: 'Web Development Fundamentals',
-    score: 85,
-    passed: true,
-    completedAt: '2024-06-15',
-    status: 'completed',
-  },
-  {
-    id: '1',
-    userId: '1',
-    testId: '1',
-    courseName: 'Web Development Fundamentals',
-    score: 85,
-    passed: true,
-    completedAt: '2024-06-15',
-    status: 'completed',
-  },
-  {
-    id: '2',
-    userId: '1',
-    testId: '2',
-    courseName: 'React & TypeScript Mastery',
-    score: 92,
-    passed: true,
-    completedAt: '2024-07-20',
-    status: 'completed',
-  },
-  {
-    id: '3',
-    userId: '2',
-    testId: '1',
-    courseName: 'Web Development Fundamentals',
-    score: 78,
-    passed: true,
-    completedAt: '2024-06-18',
-    status: 'completed',
-  },
-  {
-    id: '4',
-    userId: '2',
-    testId: '2',
-    courseName: 'React & TypeScript Mastery',
-    score: 65,
-    passed: false,
-    completedAt: '2024-07-22',
-    status: 'completed',
-  },
-  {
-    id: '5',
-    userId: '3',
-    testId: '1',
-    courseName: 'Web Development Fundamentals',
-    score: 0,
-    passed: false,
-    completedAt: '',
-    status: 'in-progress',
   },
 ];
 

@@ -3,20 +3,20 @@ import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 
 export const columns: GridColDef[] = [
   {
-    field: 'userId',
-    headerName: 'Korisnik ID',
-    minWidth: 100,
-    renderCell: (params: GridRenderCellParams) => <Typography fontWeight={500}>#{params.value}</Typography>,
+    field: 'userName',
+    headerName: 'User',
+    flex: 1,
+    minWidth: 200,
   },
   {
-    field: 'courseName',
-    headerName: 'Kurs',
+    field: 'testName',
+    headerName: 'Test',
     flex: 1,
     minWidth: 280,
   },
   {
-    field: 'score',
-    headerName: 'Rezultat',
+    field: 'userScore',
+    headerName: 'Score',
     minWidth: 260,
     flex: 1,
 
@@ -42,6 +42,20 @@ export const columns: GridColDef[] = [
     ),
   },
   {
+    field: 'score',
+    headerName: 'Passing Score',
+    minWidth: 120,
+    flex: 1,
+
+    renderCell: (params: GridRenderCellParams) => (
+      <Box height={'100%'} alignItems={'center'} display={'flex'}>
+        <Typography variant="body2" fontWeight={500} sx={{ minWidth: 40 }}>
+          {params.value}%
+        </Typography>
+      </Box>
+    ),
+  },
+  {
     field: 'status',
     headerName: 'Status',
     minWidth: 120,
@@ -58,20 +72,20 @@ export const columns: GridColDef[] = [
   },
   {
     field: 'passed',
-    headerName: 'Položeno',
+    headerName: 'Result',
     minWidth: 120,
     flex: 1,
 
     renderCell: (params: GridRenderCellParams) =>
       params.row.status === 'completed' ? (
-        <Chip label={params.value ? 'Da' : 'Ne'} size="small" color={params.value ? 'success' : 'error'} variant="outlined" />
-      ) : null,
-  },
-  {
-    field: 'completedAt',
-    headerName: 'Datum',
-    flex: 1,
-    minWidth: 130,
-    valueFormatter: (value: string) => (value ? new Date(value).toLocaleDateString('sr-RS') : '-'),
+        <Chip
+          label={params.value ? 'Passed' : 'Failed'}
+          size="small"
+          color={params.value ? 'success' : 'error'}
+          variant="outlined"
+        />
+      ) : (
+        <Chip label={'Pending'} size="small" color={'secondary'} variant="outlined" />
+      ),
   },
 ];

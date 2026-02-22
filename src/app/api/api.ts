@@ -1,7 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import {
   mockUsers,
-  mockUserTests,
   mockTransactions,
   monthlyStats,
   testPassRates,
@@ -15,6 +14,11 @@ import {
   type TestList,
   type RequestTableFE,
   mapRequestToTableFE,
+  mapUserTestBE2FE,
+  type UserTestBE,
+  type UserTable,
+  type UserTableBE,
+  mapUserTableBE2FE,
 } from '../../lib/types';
 import { axiosBaseQuery } from './apiService';
 import type { UserData } from '../pages/auth/types/User';
@@ -90,6 +94,14 @@ export const api = createApi({
       providesTags: ['Tests'],
     }),
 
+    getResults: builder.query<UserTest[], void>({
+      query: () => ({
+        url: `${testsUrl}/admin-tests-results`,
+      }),
+      transformResponse: (response: UserTestBE[]): UserTest[] => response.map((result) => mapUserTestBE2FE(result)),
+      providesTags: ['Tests'],
+    }),
+
     createTest: builder.mutation<Test, TestFormData>({
       query: (test) => ({
         url: `${adminUrl}/create-test`,
@@ -125,13 +137,13 @@ export const api = createApi({
       invalidatesTags: ['Requests'],
     }),
 
-    getUserTests: builder.query<UserTest[], void>({
-      queryFn: async () => {
-        await delay(300);
-        return { data: mockUserTests };
-      },
-      providesTags: ['UserTests'],
-    }),
+    // getUserTests: builder.query<UserTest[], void>({
+    //   queryFn: async () => {
+    //     await delay(300);
+    //     return { data: mockUserTests };
+    //   },
+    //   providesTags: ['UserTests'],
+    // }),
 
     getTransactions: builder.query<Transaction[], void>({
       queryFn: async () => {
@@ -208,6 +220,15 @@ export const api = createApi({
         method: 'GET',
       }),
     }),
+
+    //GET All Users for table
+    getAllUsers: builder.query<UserTable[], void>({
+      query: () => ({
+        url: `${adminUrl}/all-users`,
+        method: 'GET',
+      }),
+      transformResponse: (response: UserTableBE[]): UserTable[] => response.map((user) => mapUserTableBE2FE(user)),
+    }),
   }),
 });
 
@@ -222,7 +243,8 @@ export const {
   useCreateTestMutation,
   useGetRequestsQuery,
   useChangeRequestStatusMutation,
-  useGetUserTestsQuery,
+  // useGetUserTestsQuery,
+  useGetResultsQuery,
   useGetTransactionsQuery,
   // useGetCertificatesQuery,
   // useApproveCertificateMutation,
@@ -230,4 +252,5 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useGetUserInfoMutation,
+  useGetAllUsersQuery,
 } = api;
