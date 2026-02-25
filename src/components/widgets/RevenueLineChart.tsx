@@ -1,8 +1,14 @@
 import { LineChart } from '@mui/x-charts/LineChart';
 import { Card, CardContent, Typography } from '@mui/material';
-import { monthlyStats } from '../../lib/types';
+import type { MonthlyRevenueDTO } from '../../lib/types';
 
-export default function RevenueLineChart() {
+type Props = {
+  revenueByMonth: MonthlyRevenueDTO[];
+};
+
+export default function RevenueLineChart({ revenueByMonth }: Props) {
+  const sorted = [...revenueByMonth].sort((a, b) => a.month.localeCompare(b.month));
+
   return (
     <Card sx={{ height: '100%', borderRadius: 3 }}>
       <CardContent>
@@ -14,14 +20,14 @@ export default function RevenueLineChart() {
           height={350}
           xAxis={[
             {
-              data: monthlyStats.map((m) => m.month),
+              data: sorted.map((m) => m.month),
               scaleType: 'point',
             },
           ]}
           series={[
             {
               label: 'Prihod (RSD)',
-              data: monthlyStats.map((m) => m.revenue),
+              data: sorted.map((m) => m.revenue),
               area: true,
             },
           ]}

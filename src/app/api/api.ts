@@ -24,6 +24,7 @@ import {
   type Answer,
   type CreateTestDTO,
   type Cerfiticates,
+  type DashboardDTO,
 } from '../../lib/types';
 import { axiosBaseQuery } from './apiService';
 import type { UserData } from '../pages/auth/types/User';
@@ -165,6 +166,13 @@ export const api = createApi({
       providesTags: ['Requests'],
     }),
 
+    getAdminDashboard: builder.query<DashboardDTO, void>({
+      query: () => ({
+        url: `${adminUrl}/dashboard`,
+        method: 'GET',
+      }),
+    }),
+
     requestEnrollCourse: builder.mutation<string, number>({
       query: (courseId) => ({
         url: `${coursesUrl}/request-course/${courseId}`,
@@ -286,6 +294,7 @@ export const {
   useLazyGetTestQuestionsQuery,
   useSubmitTestMutation,
   useGetCertificatesQuery,
+  useGetAdminDashboardQuery,
   // useGetCertificatesQuery,
   // useApproveCertificateMutation,
   useGetDashboardStatsQuery,

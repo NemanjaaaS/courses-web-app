@@ -1,76 +1,96 @@
-import { StatTrendCard } from '../../../components/widgets/StatTrendCardWidget';
+import { Box, Grid, CircularProgress } from '@mui/material';
 import PeopleIcon from '@mui/icons-material/People';
-import { Box, Grid } from '@mui/material';
-import MonthlyUsersChart from '../../../components/widgets/MonthlyUsersWidget';
-import TestPassRateChart from '../../../components/widgets/TestsPassRateWidget';
-import TopCoursesChart from '../../../components/widgets/TopCoursesWidget';
-import RevenueLineChart from '../../../components/widgets/RevenueLineChart';
+import { Assignment, TrendingUp } from '@mui/icons-material';
+
+import { StatTrendCard } from '../../../components/widgets/StatTrendCardWidget';
 import { SimpleNumberWidget } from '../../../components/widgets/SimpleNumberWidget';
-import { Assignment, EmojiEvents, TrendingUp } from '@mui/icons-material';
+import RevenueLineChart from '../../../components/widgets/RevenueLineChart';
+import { useGetAdminDashboardQuery } from '../../api/api';
+import TestPassRateChart from '../../../components/widgets/TestsPassRateWidget';
+
 export const AdminDashboardRoute = () => {
+  const { data, isLoading } = useGetAdminDashboardQuery();
+
+  if (isLoading || !data) {
+    return <CircularProgress />;
+  }
+
   return (
     <Box sx={{ height: '100vh', overflowY: 'auto', p: 2, pb: 10 }}>
-      <Grid container direction={'column'} spacing={2} width={'100%'} size="grow">
-        <Grid container direction={'row'}>
-          <Grid size="grow">
+      <Grid container direction="column" spacing={3}>
+        {/* TOP CARDS */}
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <StatTrendCard
               title="Total Users"
-              value={6}
-              percentage={15}
-              period="from last month"
-              data={[1, 2, 1, 15, 12, 5]}
+              value={data.totalUsers}
+              percentage={0}
+              period="live data"
+              data={[]}
               icon={<PeopleIcon color="primary" />}
             />
           </Grid>
-          <Grid size="grow">
+
+          <Grid size={{ xs: 12, md: 4 }}>
             <StatTrendCard
               title="Active Users"
-              value={30}
-              percentage={15}
-              period="from last month"
-              data={[1, 2, 3, 15, 20, 30]}
+              value={data.activeUsers}
+              percentage={0}
+              period="live data"
+              data={[]}
               icon={<PeopleIcon color="primary" />}
             />
           </Grid>
-          <Grid size="grow">
+
+          <Grid size={{ xs: 12, md: 4 }}>
             <StatTrendCard
               title="Total Courses"
-              value={6}
-              percentage={15}
-              period="from last month"
-              data={[1, 2, 3, 4, 5, 6]}
+              value={data.totalCourses}
+              percentage={0}
+              period="live data"
+              data={[]}
               icon={<Assignment color="primary" />}
             />
           </Grid>
         </Grid>
-        <Grid container direction={'row'} size={12}>
-          <Grid size="grow">
-            <MonthlyUsersChart />
+
+        {/* REVENUE CHART */}
+        <Grid container spacing={2}>
+          <Grid size={6}>
+            <RevenueLineChart revenueByMonth={data.revenueByMonth} />
           </Grid>
-          <Grid size="grow">
-            <TestPassRateChart />
-          </Grid>
-        </Grid>
-        <Grid container size={12} direction={'row'}>
-          <Grid size="grow">
-            <TopCoursesChart />
-          </Grid>
-          <Grid size="grow">
-            <RevenueLineChart />
+          <Grid size={6}>
+            <TestPassRateChart
+              passedTests={data.passedTests}
+              failedTests={data.failedTests}
+              testPassRate={data.passRate.toFixed(2)}
+            />
           </Grid>
         </Grid>
-        <Grid container size={12}>
-          <Grid size={'grow'}>
-            <SimpleNumberWidget value={121} label="Tests passed this week" icon={<Assignment sx={{ color: '#4338ca' }} />} />
-          </Grid>
-          <Grid size={'grow'}>
-            <SimpleNumberWidget value={4.7} label="Average Rate of the courses" icon={<TrendingUp sx={{ color: '#f59e0b' }} />} />
-          </Grid>
-          <Grid size={'grow'}>
+
+        {/* BOTTOM STATS */}
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <SimpleNumberWidget
-              value={14}
-              label="Sertificats provided this month"
-              icon={<EmojiEvents sx={{ color: '#10b981' }} />}
+              value={data.totalRevenue}
+              label="Total Revenue (RSD)"
+              icon={<TrendingUp sx={{ color: '#22c55e' }} />}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 4 }}>
+            <SimpleNumberWidget
+              value={data.pendingRevenue}
+              label="Pending Revenue (RSD)"
+              icon={<TrendingUp sx={{ color: '#f59e0b' }} />}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 4 }}>
+            <SimpleNumberWidget
+              value={data.conversionRate}
+              label="Conversion Rate (%)"
+              icon={<TrendingUp sx={{ color: '#6366f1' }} />}
             />
           </Grid>
         </Grid>

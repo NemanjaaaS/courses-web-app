@@ -1,13 +1,24 @@
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Card, CardContent, Typography } from '@mui/material';
-import { testPassRates } from '../../lib/types';
 
-export default function TestPassRateChart() {
+export default function TestPassRateChart({
+  passedTests,
+  failedTests,
+  testPassRate,
+}: {
+  passedTests: number;
+  failedTests: number;
+  testPassRate: string;
+}) {
+  const testPassRates = [
+    { name: 'Passed', value: passedTests, color: 'hsl(var(--success))' },
+    { name: 'Failed', value: failedTests, color: 'hsl(var(--destructive))' },
+  ];
   return (
     <Card sx={{ height: '100%', borderRadius: 3 }}>
       <CardContent>
         <Typography variant="h6" gutterBottom>
-          Prolaznost testova
+          Passing test rate
         </Typography>
 
         <PieChart
@@ -24,6 +35,7 @@ export default function TestPassRateChart() {
             },
           ]}
         />
+        <Typography>Test pass rate: {testPassRate}%</Typography>
       </CardContent>
     </Card>
   );

@@ -158,6 +158,25 @@ export const mapUserTableBE2FE = (backend: UserTableBE): UserTable => ({
   failedTests: backend.failedTests,
 });
 
+export interface MonthlyRevenueDTO {
+  month: string;
+  revenue: number;
+}
+
+export interface DashboardDTO {
+  totalUsers: number;
+  activeUsers: number;
+  totalCourses: number;
+  totalRevenue: number;
+  pendingRevenue: number;
+  conversionRate: number;
+  revenueByMonth: MonthlyRevenueDTO[];
+  passRate: number;
+  averageTestScoreList: { tests: TestList; averageScore: number }[];
+  passedTests: number;
+  failedTests: number;
+}
+
 export interface Transaction {
   id: string;
   userId: string;
