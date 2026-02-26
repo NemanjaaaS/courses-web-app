@@ -117,6 +117,7 @@ export const api = createApi({
         url: `${adminUrl}/dashboard`,
         method: 'GET',
       }),
+      providesTags: ['Users', 'Courses', 'Tests', 'UserTests', 'Transactions', 'Certificates', 'Requests'],
     }),
 
     changeRequestStatus: builder.mutation<string, { requestId: number; requestStatus: 'PENDING' | 'APPROVED' | 'REJECTED' }>({
@@ -186,6 +187,7 @@ export const api = createApi({
         url: `/user/dashboard`,
         method: 'GET',
       }),
+      providesTags: ['Users', 'Courses', 'Tests', 'UserTests', 'Transactions', 'Certificates', 'Requests'],
     }),
 
     // ================= AUTH =================

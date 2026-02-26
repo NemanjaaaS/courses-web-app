@@ -56,7 +56,7 @@ export const UserDashboardPage = () => {
         <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
           <StatTrendCard
             title="Average Test Score"
-            value={data?.averageScore.toFixed(0) ?? 0}
+            value={data?.averageScore?.toFixed(0) ?? 0}
             percentage={0}
             period=""
             data={[]}
@@ -68,28 +68,28 @@ export const UserDashboardPage = () => {
             <TestPassRateChart
               passedTests={data.passedTests}
               failedTests={data.failedTests}
-              testPassRate={testPassRate.toFixed(1)}
+              testPassRate={testPassRate?.toFixed(1)}
             />
           </Grid>
-
-          {/* Progress Section */}
-          <Grid size={6}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              Progress Section
-            </Typography>
-            <Grid container spacing={2}>
-              {data?.courseProgress?.map((course) => (
-                <Grid key={course.courseId} size={12}>
-                  <ProgressCardWidget
-                    title={course.courseName}
-                    current={course.completedTests}
-                    total={course.totalTests}
-                    status={course.status}
-                  />
-                </Grid>
-              ))}
+          {data?.courseProgress && data.courseProgress.length > 0 && (
+            <Grid size={6}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                Progress Section
+              </Typography>
+              <Grid container spacing={2}>
+                {data?.courseProgress?.map((course) => (
+                  <Grid key={course.courseId} size={12}>
+                    <ProgressCardWidget
+                      title={course.courseName}
+                      current={course.completedTests}
+                      total={course.totalTests}
+                      status={course.status}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
             </Grid>
-          </Grid>
+          )}
         </Grid>
       </Grid>
 

@@ -69,7 +69,7 @@ export const AdminDashboardRoute = () => {
             <TestPassRateChart
               passedTests={data.passedTests}
               failedTests={data.failedTests}
-              testPassRate={data.passRate.toFixed(2)}
+              testPassRate={data.passRate?.toFixed(2)}
             />
           </Grid>
           {/* BOTTOM STATS */}
