@@ -14,7 +14,11 @@ export const AdminDashboardRoute = () => {
   const { data, isLoading } = useGetAdminDashboardQuery();
 
   if (isLoading || !data) {
-    return <CircularProgress />;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (

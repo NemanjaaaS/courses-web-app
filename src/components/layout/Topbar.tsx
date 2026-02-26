@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { logout, selectUser } from '../../app/pages/auth/user/userSlice';
 import { useAppSelector } from '../../store/hooks';
+import { api } from '../../app/api/api';
 type TopbarProps = {
   onDrawerToggle: () => void;
 };
@@ -25,6 +26,7 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
   const handleLogout = () => {
     handleMenuClose();
     dispatch(logout());
+    dispatch(api.util.resetApiState());
     navigate('/auth/login');
   };
 

@@ -1,15 +1,8 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import {
-  mockUsers,
-  mockTransactions,
-  monthlyStats,
-  testPassRates,
-  topCourses,
-  type User,
   type Course,
   type Test,
   type UserTestResults,
-  type Transaction,
   type Request,
   type TestList,
   type RequestTableFE,
@@ -25,14 +18,12 @@ import {
   type CreateTestDTO,
   type Cerfiticates,
   type DashboardDTO,
+  type UserDashboardDTO,
 } from '../../lib/types';
 import { axiosBaseQuery } from './apiService';
 import type { UserData } from '../pages/auth/types/User';
 import type { RegisterFormData } from '../pages/auth/RegisterPage';
 import type { NewCourse } from '../pages/admin/AdminCoursesPage';
-
-// Simulate API delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const authUrl = '/auth';
 const coursesUrl = '/course';
@@ -44,29 +35,7 @@ export const api = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ['Users', 'Courses', 'Tests', 'UserTests', 'Transactions', 'Certificates', 'Requests'],
   endpoints: (builder) => ({
-    // ================= MOCK =================
-
-    getUsers: builder.query<User[], void>({
-      queryFn: async () => {
-        await delay(300);
-        return { data: mockUsers };
-      },
-      providesTags: ['Users'],
-    }),
-
-    // toggleUserStatus: builder.mutation<User, string>({
-    //   queryFn: async (userId) => {
-    //     await delay(200);
-    //     const user = mockUsers.find((u) => u.id === userId);
-    //     if (user) {
-    //       user.status = user.status === 'active' ? 'inactive' : 'active';
-    //       return { data: user };
-    //     }
-    //     return { error: { status: 404, data: 'User not found' } };
-    //   },
-    //   invalidatesTags: ['Users'],
-    // }),
-
+    // ================= COURSES =================
     getCourses: builder.query<Course[], void>({
       query: () => ({
         url: `${coursesUrl}/all`,
@@ -74,6 +43,40 @@ export const api = createApi({
       }),
       providesTags: ['Courses'],
     }),
+
+    getCertificates: builder.query<Cerfiticates[], void>({
+      query: () => ({
+        url: `${coursesUrl}/certificates`,
+        method: 'GET',
+      }),
+    }),
+
+    getRequests: builder.query<RequestTableFE[], void>({
+      query: () => ({
+        url: `${coursesUrl}/requested-courses`,
+        method: 'GET',
+      }),
+      transformResponse: (response: Request[]): RequestTableFE[] => response.map((request) => mapRequestToTableFE(request)),
+      providesTags: ['Requests'],
+    }),
+
+    requestEnrollCourse: builder.mutation<string, number>({
+      query: (courseId) => ({
+        url: `${coursesUrl}/request-course/${courseId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Courses'],
+    }),
+
+    //GET All Users for table
+    getAllUsers: builder.query<UserTable[], void>({
+      query: () => ({
+        url: `${adminUrl}/all-users`,
+        method: 'GET',
+      }),
+      transformResponse: (response: UserTableBE[]): UserTable[] => response.map((user) => mapUserTableBE2FE(user)),
+    }),
+    // ================ ADMIN =================
 
     createCourse: builder.mutation<Course, NewCourse>({
       query: (data) => ({
@@ -91,6 +94,41 @@ export const api = createApi({
       }),
       invalidatesTags: ['Courses'],
     }),
+
+    createTest: builder.mutation<Test, CreateTestDTO>({
+      query: (test) => ({
+        url: `${adminUrl}/create-test`,
+        method: 'POST',
+        data: test,
+      }),
+      invalidatesTags: ['Tests'],
+    }),
+
+    deleteTest: builder.mutation<string, number>({
+      query: (testId) => ({
+        url: `${adminUrl}/delete-test/${testId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Tests'],
+    }),
+
+    getAdminDashboard: builder.query<DashboardDTO, void>({
+      query: () => ({
+        url: `${adminUrl}/dashboard`,
+        method: 'GET',
+      }),
+    }),
+
+    changeRequestStatus: builder.mutation<string, { requestId: number; requestStatus: 'PENDING' | 'APPROVED' | 'REJECTED' }>({
+      query: ({ requestId, requestStatus }) => ({
+        url: `${adminUrl}/change-course-status`,
+        method: 'POST',
+        data: { requestId, requestStatus },
+      }),
+      invalidatesTags: ['Requests'],
+    }),
+
+    // ================= TESTS =================
 
     getTests: builder.query<TestList[], void>({
       query: () => ({
@@ -133,114 +171,24 @@ export const api = createApi({
       providesTags: ['Tests'],
     }),
 
-    getCertificates: builder.query<Cerfiticates[], void>({
+    // ================ USER =================
+
+    //GET User info
+    getUserInfo: builder.mutation<UserData, void>({
       query: () => ({
-        url: `${coursesUrl}/certificates`,
+        url: '/user/me',
         method: 'GET',
       }),
     }),
 
-    createTest: builder.mutation<Test, CreateTestDTO>({
-      query: (test) => ({
-        url: `${adminUrl}/create-test`,
-        method: 'POST',
-        data: test,
-      }),
-      invalidatesTags: ['Tests'],
-    }),
-
-    deleteTest: builder.mutation<string, number>({
-      query: (testId) => ({
-        url: `${adminUrl}/delete-test/${testId}`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: ['Tests'],
-    }),
-
-    getRequests: builder.query<RequestTableFE[], void>({
+    getUserDashboard: builder.query<UserDashboardDTO, void>({
       query: () => ({
-        url: `${coursesUrl}/requested-courses`,
-        method: 'GET',
-      }),
-      transformResponse: (response: Request[]): RequestTableFE[] => response.map((request) => mapRequestToTableFE(request)),
-      providesTags: ['Requests'],
-    }),
-
-    getAdminDashboard: builder.query<DashboardDTO, void>({
-      query: () => ({
-        url: `${adminUrl}/dashboard`,
+        url: `/user/dashboard`,
         method: 'GET',
       }),
     }),
 
-    requestEnrollCourse: builder.mutation<string, number>({
-      query: (courseId) => ({
-        url: `${coursesUrl}/request-course/${courseId}`,
-        method: 'POST',
-      }),
-      invalidatesTags: ['Courses'],
-    }),
-
-    changeRequestStatus: builder.mutation<string, { requestId: number; requestStatus: 'PENDING' | 'APPROVED' | 'REJECTED' }>({
-      query: ({ requestId, requestStatus }) => ({
-        url: `${adminUrl}/change-course-status`,
-        method: 'POST',
-        data: { requestId, requestStatus },
-      }),
-      invalidatesTags: ['Requests'],
-    }),
-
-    getTransactions: builder.query<Transaction[], void>({
-      queryFn: async () => {
-        await delay(300);
-        return { data: mockTransactions };
-      },
-      providesTags: ['Transactions'],
-    }),
-
-    // getCertificates: builder.query<Request[], void>({
-    //   queryFn: async () => {
-    //     await delay(300);
-    //     return { data: mockCertificates };
-    //   },
-    //   providesTags: ['Certificates'],
-    // }),
-
-    // approveCertificate: builder.mutation<Certificate, string>({
-    //   queryFn: async (certId) => {
-    //     await delay(200);
-    //     const cert = mockCertificates.find((c) => c.id === certId);
-    //     if (cert) {
-    //       cert.status = 'approved';
-    //       cert.approvedAt = new Date().toISOString();
-    //       return { data: cert };
-    //     }
-    //     return { error: { status: 404, data: 'Certificate not found' } };
-    //   },
-    //   invalidatesTags: ['Certificates'],
-    // }),
-
-    getDashboardStats: builder.query<
-      {
-        monthlyStats: typeof monthlyStats;
-        testPassRates: typeof testPassRates;
-        topCourses: typeof topCourses;
-      },
-      void
-    >({
-      queryFn: async () => {
-        await delay(300);
-        return {
-          data: {
-            monthlyStats,
-            testPassRates,
-            topCourses,
-          },
-        };
-      },
-    }),
-
-    // ================= REAL AUTH =================
+    // ================= AUTH =================
 
     login: builder.mutation<{ authenticationToken: string; refreshToken: string }, { email: string; password: string }>({
       query: (body) => ({
@@ -257,29 +205,10 @@ export const api = createApi({
         data: data,
       }),
     }),
-
-    //GET User info
-    getUserInfo: builder.mutation<UserData, void>({
-      query: () => ({
-        url: '/user/me',
-        method: 'GET',
-      }),
-    }),
-
-    //GET All Users for table
-    getAllUsers: builder.query<UserTable[], void>({
-      query: () => ({
-        url: `${adminUrl}/all-users`,
-        method: 'GET',
-      }),
-      transformResponse: (response: UserTableBE[]): UserTable[] => response.map((user) => mapUserTableBE2FE(user)),
-    }),
   }),
 });
 
 export const {
-  useGetUsersQuery,
-  // useToggleUserStatusMutation,
   useGetCoursesQuery,
   useCreateCourseMutation,
   useDeleteCourseMutation,
@@ -290,14 +219,11 @@ export const {
   useChangeRequestStatusMutation,
   useGetUserTestsQuery,
   useGetResultsQuery,
-  useGetTransactionsQuery,
   useLazyGetTestQuestionsQuery,
   useSubmitTestMutation,
   useGetCertificatesQuery,
   useGetAdminDashboardQuery,
-  // useGetCertificatesQuery,
-  // useApproveCertificateMutation,
-  useGetDashboardStatsQuery,
+  useGetUserDashboardQuery,
   useLoginMutation,
   useRegisterMutation,
   useGetUserInfoMutation,

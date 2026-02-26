@@ -3,12 +3,13 @@ import { createBrowserRouter, Navigate, RouterProvider, Outlet } from 'react-rou
 import App from '../App';
 import { AuthRoot } from './pages/auth/AuthRoute';
 import { useAppSelector } from '../store/hooks';
-import { selectAuthState } from './pages/auth/user/userSlice';
+import { selectAuthState, selectUser } from './pages/auth/user/userSlice';
 import { Box, CircularProgress } from '@mui/material';
 
-// Protected Route Component
-function RequireAuth() {
+function RequireRole({ allowedRoles }: { allowedRoles: string[] }) {
+  const user = useAppSelector(selectUser);
   const { isAuthenticated, loading } = useAppSelector(selectAuthState);
+
   if (loading) {
     return (
       <Box sx={{ width: '100%', height: '100%' }}>
@@ -16,8 +17,17 @@ function RequireAuth() {
       </Box>
     );
   }
+
   if (!isAuthenticated) {
     return <Navigate to="/auth/login" replace />;
+  }
+
+  if (!allowedRoles.includes(user.role)) {
+    // redirect na odgovarajući dashboard
+    if (user.role === 'ADMIN') {
+      return <Navigate to="/app/admin/dashboard" replace />;
+    }
+    return <Navigate to="/app/user/dashboard" replace />;
   }
 
   return <Outlet />;
@@ -51,7 +61,7 @@ const createAppRouter = () =>
     },
     {
       path: '/app',
-      element: <RequireAuth />,
+      element: <RequireRole allowedRoles={['ADMIN', 'USER']} />,
       children: [
         {
           path: '',
@@ -60,6 +70,7 @@ const createAppRouter = () =>
             // ---------- ADMIN ----------
             {
               path: 'admin',
+              element: <RequireRole allowedRoles={['ADMIN']} />,
               children: [
                 { index: true, element: <Navigate to="dashboard" replace /> },
 
@@ -118,6 +129,7 @@ const createAppRouter = () =>
             // ---------- USER ----------
             {
               path: 'user',
+              element: <RequireRole allowedRoles={['USER']} />,
               children: [
                 { index: true, element: <Navigate to="dashboard" replace /> },
 

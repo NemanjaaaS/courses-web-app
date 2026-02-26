@@ -63,7 +63,7 @@ export const refreshTokenThunk = createAsyncThunk<string, void, { rejectValue: s
     try {
       const refreshToken = localStorage.getItem('refresh_token');
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/refresh`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/refresh?refreshToken=${refreshToken}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
