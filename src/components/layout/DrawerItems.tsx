@@ -169,8 +169,8 @@ export const DrawerItems: React.FC<DrawerItemsProps> = () => {
         >
           <SchoolIcon sx={{ fontSize: 20, color: 'white' }} />
         </Box>
-        <Typography variant="h6" fontWeight={700} color="common.white">
-          EduPlatform
+        <Typography variant="h4" fontWeight={700} color="common.white" fontStyle={'italic'}>
+          SkillStack
         </Typography>
       </Box>
       <List component="nav" sx={sidebarStyles.navigationList}>

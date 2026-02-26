@@ -77,7 +77,7 @@ export const RegisterPage = () => {
               width: 56,
               height: 56,
               borderRadius: 3,
-              background: 'linear-gradient(135deg, #4338ca 0%, #7c3aed 100%)',
+              background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

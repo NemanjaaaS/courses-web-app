@@ -206,6 +206,7 @@ export const Topbar = ({ onDrawerToggle }: TopbarProps) => {
           onClose={handleMenuClose}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          slotProps={{ paper: { sx: { borderRadius: 3, width: 150 } } }}
         >
           <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
             <ListItemIcon>

@@ -1,50 +1,56 @@
 import { Box, Grid, Stack, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
-
 export const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (
     <Grid container direction="row" sx={{ minHeight: '100vh', display: 'flex' }}>
       <Grid
         sx={{
-          display: { sm: 'none', lg: 'flex' },
           flex: 1,
+          display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #4338ca 0%, #7c3aed 100%)',
-          p: 6,
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)',
         }}
-        size={{ sm: 0, md: 8 }}
       >
-        <Box sx={{ maxWidth: 480, textAlign: 'center', color: 'white' }}>
-          <Typography variant="h3" fontWeight={700} gutterBottom>
-            Naučite nove veštine. Unapredite karijeru.
-          </Typography>
-          <Typography variant="h6" sx={{ opacity: 0.9, mb: 4 }}>
-            Pristupite stotinama kurseva i testova. Dobijte sertifikate koji potvrđuju vaše znanje.
-          </Typography>
-          <Stack direction="row" spacing={6} justifyContent="center">
+        <Box sx={{ maxWidth: 580, textAlign: 'center', color: 'white' }}>
+          <Box>
+            <Typography variant="h1" fontWeight={700} gutterBottom fontStyle={'italic'}>
+              SkillStack
+            </Typography>
+          </Box>
+          <Box pt={4}>
+            <Typography variant="h3" fontWeight={700} gutterBottom>
+              Build Skills That Shape Your Future.
+            </Typography>
+
+            <Typography variant="h6" sx={{ opacity: 0.9, mb: 4 }}>
+              Explore courses, challenge yourself with real-world tests, and earn certificates that validate your expertise.
+            </Typography>
+          </Box>
+
+          <Stack direction="row" spacing={4} justifyContent="space-between" pt={5}>
             <Box textAlign="center">
-              <Typography variant="h3" fontWeight={700}>
-                500+
+              <Typography variant="h4" fontWeight={700}>
+                Master Skills.
               </Typography>
-              <Typography sx={{ opacity: 0.8 }}>Kurseva</Typography>
             </Box>
+
             <Box textAlign="center">
-              <Typography variant="h3" fontWeight={700}>
-                10k+
+              <Typography variant="h4" fontWeight={700}>
+                Prove Your Knowledge.
               </Typography>
-              <Typography sx={{ opacity: 0.8 }}>Korisnika</Typography>
             </Box>
+
             <Box textAlign="center">
-              <Typography variant="h3" fontWeight={700}>
-                95%
+              <Typography variant="h4" fontWeight={700}>
+                Stand Out.
               </Typography>
-              <Typography sx={{ opacity: 0.8 }}>Zadovoljstvo</Typography>
             </Box>
           </Stack>
         </Box>
       </Grid>
-      <Grid size={{ md: 4, sm: 12 }}>{children}</Grid>
+
+      <Grid size={{ xs: 12, sm: 4 }}>{children}</Grid>
     </Grid>
   );
 };
