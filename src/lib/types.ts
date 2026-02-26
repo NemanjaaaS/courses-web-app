@@ -175,6 +175,11 @@ export interface DashboardDTO {
   averageTestScoreList: { tests: TestList; averageScore: number }[];
   passedTests: number;
   failedTests: number;
+  cumulativeUserCount: { cumulativeTotal: number; createdAt: string }[];
+  topCourseDTOS: {
+    courseName: string;
+    numberOfEnrollments: number;
+  }[];
 }
 
 export interface Transaction {

@@ -1,5 +1,5 @@
 import { PieChart } from '@mui/x-charts/PieChart';
-import { Card, CardContent, Typography } from '@mui/material';
+import { Card, CardContent, Stack, Typography } from '@mui/material';
 
 export default function TestPassRateChart({
   passedTests,
@@ -35,7 +35,9 @@ export default function TestPassRateChart({
             },
           ]}
         />
-        <Typography>Test pass rate: {testPassRate}%</Typography>
+        <Stack>
+          <Typography variant="h6">Test pass rate: {testPassRate}%</Typography>
+        </Stack>
       </CardContent>
     </Card>
   );

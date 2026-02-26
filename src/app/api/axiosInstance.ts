@@ -12,8 +12,9 @@ const axiosInstance = axios.create({
 
 let tokenInterceptor: number | null = null;
 
-export const setBearerToken = async (token: string) => {
+export const setBearerToken = async (token: string, refreshToken: string) => {
   localStorage.setItem(TOKEN_STORAGE_KEY, token);
+  localStorage.setItem('refresh_token', refreshToken);
 
   if (tokenInterceptor !== null) {
     axiosInstance.interceptors.request.eject(tokenInterceptor);
@@ -53,7 +54,7 @@ axiosInstance.interceptors.response.use(
         const newToken = res.data.authenticationToken;
 
         localStorage.setItem(TOKEN_STORAGE_KEY, newToken);
-        await setBearerToken(newToken);
+        await setBearerToken(newToken, res.data.refreshToken);
 
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
 

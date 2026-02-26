@@ -45,7 +45,7 @@ export const LoginPage = () => {
     try {
       const tokenResponse = await userLogin({ email: data.email, password: data.password }).unwrap();
       if (tokenResponse) {
-        await setBearerToken(tokenResponse.authenticationToken);
+        await setBearerToken(tokenResponse.authenticationToken, tokenResponse.refreshToken);
 
         const userDetails = await getUserInfo().unwrap();
         if (userDetails) {

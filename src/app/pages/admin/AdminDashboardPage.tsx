@@ -7,6 +7,8 @@ import { SimpleNumberWidget } from '../../../components/widgets/SimpleNumberWidg
 import RevenueLineChart from '../../../components/widgets/RevenueLineChart';
 import { useGetAdminDashboardQuery } from '../../api/api';
 import TestPassRateChart from '../../../components/widgets/TestsPassRateWidget';
+import AverageTestScoreListWidget from '../../../components/widgets/AverageTestScore';
+import TopCoursesChart from '../../../components/widgets/TopCoursesWidget';
 
 export const AdminDashboardRoute = () => {
   const { data, isLoading } = useGetAdminDashboardQuery();
@@ -26,7 +28,7 @@ export const AdminDashboardRoute = () => {
               value={data.totalUsers}
               percentage={0}
               period="live data"
-              data={[]}
+              data={data.cumulativeUserCount}
               icon={<PeopleIcon color="primary" />}
             />
           </Grid>
@@ -66,32 +68,39 @@ export const AdminDashboardRoute = () => {
               testPassRate={data.passRate.toFixed(2)}
             />
           </Grid>
-        </Grid>
+          {/* BOTTOM STATS */}
+          <Grid container spacing={2} size={12}>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <SimpleNumberWidget
+                value={data.totalRevenue}
+                label="Total Revenue (RSD)"
+                icon={<TrendingUp sx={{ color: '#22c55e' }} />}
+              />
+            </Grid>
 
-        {/* BOTTOM STATS */}
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <SimpleNumberWidget
-              value={data.totalRevenue}
-              label="Total Revenue (RSD)"
-              icon={<TrendingUp sx={{ color: '#22c55e' }} />}
-            />
+            <Grid size={{ xs: 12, md: 4 }}>
+              <SimpleNumberWidget
+                value={data.pendingRevenue}
+                label="Pending Revenue (RSD)"
+                icon={<TrendingUp sx={{ color: '#f59e0b' }} />}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 4 }}>
+              <SimpleNumberWidget
+                value={data.conversionRate}
+                label="Conversion Rate (%)"
+                icon={<TrendingUp sx={{ color: '#6366f1' }} />}
+              />
+            </Grid>
           </Grid>
-
-          <Grid size={{ xs: 12, md: 4 }}>
-            <SimpleNumberWidget
-              value={data.pendingRevenue}
-              label="Pending Revenue (RSD)"
-              icon={<TrendingUp sx={{ color: '#f59e0b' }} />}
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, md: 4 }}>
-            <SimpleNumberWidget
-              value={data.conversionRate}
-              label="Conversion Rate (%)"
-              icon={<TrendingUp sx={{ color: '#6366f1' }} />}
-            />
+          <Grid container spacing={2} size={12}>
+            <Grid size={6}>
+              <AverageTestScoreListWidget data={data.averageTestScoreList} />
+            </Grid>
+            <Grid size={6}>
+              <TopCoursesChart topCourses={data.topCourseDTOS} />
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

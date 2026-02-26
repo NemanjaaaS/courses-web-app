@@ -34,7 +34,7 @@ export const loginThunk = createAsyncThunk<
     const result = await dispatch(api.endpoints.login.initiate(credentials)).unwrap();
 
     // set token to axios interceptor + localStorage
-    await setBearerToken(result.authenticationToken);
+    await setBearerToken(result.authenticationToken, result.refreshToken);
     localStorage.setItem(TOKEN_STORAGE_KEY, result.authenticationToken);
     localStorage.setItem('refresh_token', result.refreshToken);
 
@@ -58,7 +58,7 @@ export const loginThunk = createAsyncThunk<
 });
 
 export const refreshTokenThunk = createAsyncThunk<string, void, { rejectValue: string }>(
-  'auth/refreshToken',
+  'auth/refresh',
   async (_, { rejectWithValue }) => {
     try {
       const refreshToken = localStorage.getItem('refresh_token');
@@ -76,8 +76,9 @@ export const refreshTokenThunk = createAsyncThunk<string, void, { rejectValue: s
       const data = await response.json();
 
       localStorage.setItem(TOKEN_STORAGE_KEY, data.authenticationToken);
+      localStorage.setItem('refresh_token', data.refreshToken);
 
-      await setBearerToken(data.authenticationToken);
+      await setBearerToken(data.authenticationToken, data.refreshToken);
 
       return data.authenticationToken;
     } catch {
@@ -118,7 +119,7 @@ export const initializeAuth = createAsyncThunk<{ user: UserData; token: string }
       }
     }
 
-    await setBearerToken(token);
+    await setBearerToken(token, localStorage.getItem('refresh_token') ?? '');
 
     try {
       // Validate token by fetching user info

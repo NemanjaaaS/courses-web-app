@@ -1,19 +1,29 @@
 import { BarChart } from '@mui/x-charts/BarChart';
 import { Card, CardContent, Typography } from '@mui/material';
+import type { TestList } from '../../lib/types';
 
-export default function TopCoursesChart({ topCourses }: { topCourses: { courseName: string; numberOfEnrollments: number }[] }) {
+type Props = {
+  data: { tests: TestList; averageScore: number }[]; // better: define proper type
+};
+
+export default function AverageTestScoreListWidget({ data }: Props) {
+  const chartData = data.map((item) => ({
+    name: item.tests.title,
+    score: item.averageScore,
+  }));
+
   return (
     <Card sx={{ height: '100%', borderRadius: 3 }}>
       <CardContent>
         <Typography variant="h6" gutterBottom>
-          Top 5 courses by enrollments
+          Average score for tests
         </Typography>
 
         <BarChart
           height={300}
           xAxis={[
             {
-              data: topCourses.map((c) => c.courseName),
+              data: chartData.map((c) => c.name),
               scaleType: 'band',
               categoryGapRatio: 0.5,
               barGapRatio: 0.1,
@@ -21,8 +31,8 @@ export default function TopCoursesChart({ topCourses }: { topCourses: { courseNa
           ]}
           series={[
             {
-              label: 'Enrollments',
-              data: topCourses?.map((c) => c.numberOfEnrollments),
+              label: 'Average Score (%)',
+              data: chartData.map((c) => c.score),
             },
           ]}
         />
