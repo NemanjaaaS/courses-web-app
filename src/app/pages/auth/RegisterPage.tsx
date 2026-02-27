@@ -230,7 +230,7 @@ export const RegisterPage = () => {
                 fullWidth
                 disabled={isSubmitting}
                 endIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <ArrowForwardIcon />}
-                sx={{ py: 1.5, mt: 1 }}
+                sx={{ py: 1.5, mt: 1, backgroundColor: '#2244a0' }}
               >
                 {isSubmitting ? 'Registering...' : 'Sign up'}
               </Button>
@@ -243,7 +243,7 @@ export const RegisterPage = () => {
               component={Link}
               to="/auth/login"
               sx={{
-                color: 'primary.main',
+                color: '#264baf',
                 textDecoration: 'none',
                 fontWeight: 500,
               }}

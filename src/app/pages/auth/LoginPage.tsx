@@ -97,7 +97,7 @@ export const LoginPage = () => {
             <Typography variant="h4" fontWeight={700} gutterBottom>
               Welcome back
             </Typography>
-            <Typography color="text.secondary">Sign in to your account</Typography>
+            <Typography color="secondary">Sign in to your account</Typography>
           </Box>
 
           <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%' }}>
@@ -162,20 +162,20 @@ export const LoginPage = () => {
                 fullWidth
                 disabled={isSubmitting}
                 endIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <ArrowForwardIcon />}
-                sx={{ py: 1.5 }}
+                sx={{ py: 1.5, backgroundColor: '#2244a0' }}
               >
                 {isSubmitting ? 'Signing in...' : 'Sign in'}
               </Button>
             </Stack>
           </Box>
 
-          <Typography color="text.secondary">
+          <Typography color="secondary">
             Don’t have an account?{' '}
             <Typography
               component={Link}
               to="/auth/register"
               sx={{
-                color: 'primary.main',
+                color: '#264baf',
                 textDecoration: 'none',
                 fontWeight: 500,
               }}

@@ -13,7 +13,7 @@ export default function RevenueLineChart({ revenueByMonth }: Props) {
     <Card sx={{ height: '100%', borderRadius: 3 }}>
       <CardContent>
         <Typography variant="h5" fontWeight={600} gutterBottom>
-          Mesečni prihod (RSD)
+          Monthly revenue (RSD)
         </Typography>
 
         <LineChart
@@ -24,9 +24,10 @@ export default function RevenueLineChart({ revenueByMonth }: Props) {
               scaleType: 'point',
             },
           ]}
+          yAxis={[{ width: 50 }]}
           series={[
             {
-              label: 'Prihod (RSD)',
+              label: 'Revenue (RSD)',
               data: sorted.map((m) => m.revenue),
               area: true,
             },
