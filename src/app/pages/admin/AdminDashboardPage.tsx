@@ -92,7 +92,7 @@ export const AdminDashboardRoute = () => {
 
             <Grid size={{ xs: 12, md: 4 }}>
               <SimpleNumberWidget
-                value={data.conversionRate}
+                value={Number(data.conversionRate?.toFixed(2))}
                 label="Conversion Rate (%)"
                 icon={<TrendingUp sx={{ color: '#6366f1' }} />}
               />
