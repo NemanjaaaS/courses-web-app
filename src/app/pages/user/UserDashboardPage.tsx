@@ -74,46 +74,46 @@ export const UserDashboardPage = () => {
           {data?.courseProgress && data.courseProgress.length > 0 && (
             <Grid size={6}>
               <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Progress Section
+                Recent Activity
               </Typography>
-              <Grid container spacing={2}>
-                {data?.courseProgress?.map((course) => (
-                  <Grid key={course.courseId} size={12}>
-                    <ProgressCardWidget
-                      title={course.courseName}
-                      current={course.completedTests}
-                      total={course.totalTests}
-                      status={course.status}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
+
+              <Card sx={{ borderRadius: 3 }}>
+                <CardContent>
+                  {data?.recentTests?.slice(0, 5).map((test) => (
+                    <Box key={test.testId} sx={{ mb: 2 }}>
+                      <Typography fontWeight={500}>{test.courseName}</Typography>
+
+                      <Typography variant="body2" color="text.secondary">
+                        {`Score: ${test.score}%`}
+                      </Typography>
+                      <Divider />
+                    </Box>
+                  ))}
+                </CardContent>
+              </Card>
             </Grid>
           )}
         </Grid>
       </Grid>
 
       {/* Recent Activity */}
-      <Box>
+      <Grid container size={12}>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Recent Activity
+          Progress Section
         </Typography>
-
-        <Card sx={{ borderRadius: 3 }}>
-          <CardContent>
-            {data?.recentTests?.slice(0, 5).map((test) => (
-              <Box key={test.testId} sx={{ mb: 2 }}>
-                <Typography fontWeight={500}>{test.courseName}</Typography>
-
-                <Typography variant="body2" color="text.secondary">
-                  {`Score: ${test.score}%`}
-                </Typography>
-                <Divider />
-              </Box>
-            ))}
-          </CardContent>
-        </Card>
-      </Box>
+        <Grid container spacing={2}>
+          {data?.courseProgress?.map((course) => (
+            <Grid key={course.courseId} size={12}>
+              <ProgressCardWidget
+                title={course.courseName}
+                current={course.completedTests}
+                total={course.totalTests}
+                status={course.status}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Grid>
     </Box>
   );
 };
