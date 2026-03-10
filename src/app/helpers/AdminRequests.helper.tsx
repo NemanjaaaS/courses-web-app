@@ -42,7 +42,7 @@ export const getRequestsColumns = (
       field: 'processedDate',
       headerName: 'Processed Date',
       width: 160,
-      valueFormatter: (value: string) => new Date(value).toLocaleDateString('sr-RS'),
+      valueFormatter: (value: string) => (value ? new Date(value).toLocaleDateString('sr-RS') : '-'),
     },
     {
       field: 'status',

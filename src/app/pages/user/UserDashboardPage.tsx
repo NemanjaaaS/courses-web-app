@@ -97,7 +97,7 @@ export const UserDashboardPage = () => {
       </Grid>
 
       {/* Recent Activity */}
-      <Grid container size={12}>
+      <Grid container size={12} direction={'column'}>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
           Progress Section
         </Typography>
