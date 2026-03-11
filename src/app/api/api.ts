@@ -49,6 +49,7 @@ export const api = createApi({
         url: `${coursesUrl}/certificates`,
         method: 'GET',
       }),
+      providesTags: ['Certificates'],
     }),
 
     getRequests: builder.query<RequestTableFE[], void>({
@@ -161,7 +162,7 @@ export const api = createApi({
         method: 'POST',
         data: { testId: testId, answers: answers },
       }),
-      invalidatesTags: ['Tests'],
+      invalidatesTags: ['Tests', 'Certificates'],
     }),
 
     getResults: builder.query<UserTestResults[], void>({

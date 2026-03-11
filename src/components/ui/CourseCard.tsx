@@ -123,7 +123,12 @@ export function CourseCard({ course, onEnroll }: CourseCardProps) {
             </Typography>
           </Typography>
           {!isAdmin ? (
-            <Button variant={course.courseRequested ? 'outlined' : 'contained'} size="small" onClick={onEnroll}>
+            <Button
+              variant={course.courseRequested ? 'outlined' : 'contained'}
+              size="small"
+              onClick={onEnroll}
+              disabled={course.courseRequested}
+            >
               {course.courseRequested ? 'Enrolled' : 'Enroll Now'}
             </Button>
           ) : (
