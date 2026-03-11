@@ -30,7 +30,7 @@ export const ProgressCardWidget = ({ title, current, total, status = 'not-starte
         <Box sx={{ mb: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
             <Typography variant="body2" color="text.secondary">
-              {current} od {total} položeno
+              {current} of {total} passed
             </Typography>
             <Typography variant="body2" fontWeight="medium">
               {percentage}%
